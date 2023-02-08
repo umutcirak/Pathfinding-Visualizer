@@ -4,31 +4,23 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-    [SerializeField] Sprite defaultImage;
-    [SerializeField] Sprite startImage;
-    [SerializeField] Sprite targetImage;
+    [Header("Sprite Settings")]
+    [SerializeField] public Sprite defaultImage;
+    [SerializeField] public Sprite startImage;
+    [SerializeField] public Sprite targetImage;
+       
 
-    bool isVisited;
-    bool isSelected;
-    public enum TileType { Path, Start, Target, Wall}
-    TileType tileType = TileType.Path;
+    public Vector2Int coordinate;
 
     GameManager gameManager;
+    TileVisualizer tileVisualizer;
+   
     void Awake()
     {
         gameManager = FindObjectOfType<GameManager>();
+        tileVisualizer = FindObjectOfType<TileVisualizer>();
     }
-
-    void Start()
-    {
         
-    }
-
-    
-    void Update()
-    {
-        
-    }
 
     
    
@@ -36,24 +28,33 @@ public class Tile : MonoBehaviour
 
     public void OnMouseDown()
     {  
+        if(gameManager.IsProcessing()) { return; }
+
         if(Input.GetMouseButtonDown(0))
         {
             bool isStartSelected = gameManager.startTile != null;
             bool isTargetSelected = gameManager.targetTile != null;
 
-            if (isStartSelected && isTargetSelected) { gameManager.Reset(); }
+            if (isStartSelected && isTargetSelected)
+            {
+                //gameManager.startTile.ResetTile();
+                //gameManager.targetTile.ResetTile();
 
+                gameManager.Reset();
 
-            if (tileType == TileType.Path)
+                gameManager.startTile = null;
+                gameManager.targetTile = null;
+            }
+            else 
             {
                 if(!isStartSelected && !isTargetSelected)
                 {
-                    SetType(TileType.Start, startImage);
+                    SetImage(startImage);
                     gameManager.startTile = this;
                 }
                 else if(isStartSelected && !isTargetSelected)
                 {
-                    SetType(TileType.Target, targetImage);
+                    SetImage(targetImage);
                     gameManager.targetTile = this;
                 }
 
@@ -66,18 +67,17 @@ public class Tile : MonoBehaviour
     }
 
 
-    public void SetType(TileType type, Sprite image)
-    {
-        this.tileType = type;
+    public void SetImage(Sprite image)
+    {      
         GetComponent<SpriteRenderer>().sprite = image;        
     }
 
     public void ResetTile()
     {
+        Debug.Log("Resetted");
         GetComponent<SpriteRenderer>().sprite = defaultImage;
-        isVisited = false;
-        isSelected = false;
-        tileType = TileType.Path;
+        GetComponent<SpriteRenderer>().color = tileVisualizer.defaultColor;           
+          
     }
 
 

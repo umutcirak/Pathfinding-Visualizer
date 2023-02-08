@@ -34,7 +34,7 @@ public class Grid : MonoBehaviour
 
     void CreateGrid()
     {        
-        gameManager.allTiles = new Tile[Width, Heigth];
+        //gameManager.allTiles = new Tile[Width, Heigth];
 
         for (int x = 0; x < Width; x++)
         {
@@ -45,11 +45,19 @@ public class Grid : MonoBehaviour
                 tile.transform.parent = transform;
                 tile.name = "Tile-" + x + "," + y;
 
-                gameManager.allTiles[x, y] = tile.GetComponent<Tile>();
-                
-                
+                Tile newTile = tile.GetComponent<Tile>();               
+                Vector2Int posInt = new Vector2Int((int)pos.x, (int)pos.y);
+                newTile.coordinate = posInt;
+                gameManager.allTiles.Add(posInt, newTile);
+
+                Node node = new Node();
+                node.coordinate = posInt;
+                gameManager.allNodes.Add(posInt, node);
+
             }
         }
     }
+
+   
 
 }

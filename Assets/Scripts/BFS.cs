@@ -4,15 +4,165 @@ using UnityEngine;
 
 public class BFS : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    Vector2Int startCoordinate;
+    Vector2Int targetCoordinate;
+
+    Node startNode;
+    Node targetNode;
+    Node currentNode;
+
+    Queue<Node> queue = new Queue<Node>();
+    Dictionary<Vector2Int, Node> searchedNodes = new Dictionary<Vector2Int, Node>();
+
+    Vector2Int[] directions = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
+    // TRAVERSE PRIORITY
+
+    GameManager gameManager;
+    private void Awake()
     {
+        gameManager = FindObjectOfType<GameManager>();
+    }  
+
+    void Setup()
+    {
+        startNode = gameManager.allNodes[gameManager.startTile.coordinate];
+        targetNode = gameManager.allNodes[gameManager.targetTile.coordinate];
+
+        //DEBUG
+        Debug.Log(startNode.coordinate);
+        Debug.Log(targetNode.coordinate);
+
+        startCoordinate = startNode.coordinate;
+        targetCoordinate = targetNode.coordinate;         
+
+    }
+
+
+    public List<Node> GetPath()
+    {
+        gameManager.Reset();
+        Setup();        
+        BreadthFirstSearch();
+        return BuildPath();
+    }
+
+
+    void ExploreNeighbors()
+    {
+        List<Node> neighbors = new List<Node>();
+
+        foreach (Vector2Int direction in directions)
+        {
+            Vector2Int neighborPos = currentNode.coordinate + direction;
+
+            if (gameManager.allNodes.ContainsKey(neighborPos))
+            {
+                neighbors.Add(gameManager.allNodes[neighborPos]);
+            }
+
+        }
+
+        foreach (Node neighbor in neighbors)
+        {
+            //gridManager.BlockNode(neighbor.position);
+
+            if (!searchedNodes.ContainsKey(neighbor.coordinate) && neighbor.isWalkable)
+            {
+                neighbor.parent = currentNode;
+                searchedNodes.Add(neighbor.coordinate, neighbor);
+                queue.Enqueue(neighbor);
+            }
+
+        }
+    }
+
+    void BreadthFirstSearch()
+    {
+        StartCoroutine(BreadtFirstSearchCO());
+    }
+
+    /*
+    void BreadthFirstSearch()
+    {
+        queue.Clear();
+        searchedNodes.Clear();
+
+
+        bool isRunning = true;
+        queue.Enqueue(startNode);
+        searchedNodes.Add(startNode.coordinate, startNode);
+
+        while (isRunning && queue.Count > 0)
+        {
+            currentNode = queue.Dequeue();
+            currentNode.isExplored = true;
+            ExploreNeighbors();
+
+            if (currentNode.coordinate == targetNode.coordinate)
+            {
+                isRunning = false;
+            }
+        }
+
+    }
+    */
+
+    IEnumerator BreadtFirstSearchCO()
+    {
+        queue.Clear();
+        searchedNodes.Clear();
+
+
+        bool isRunning = true;
+        queue.Enqueue(startNode);        
+        searchedNodes.Add(startNode.coordinate, startNode);
+              
+
+        while (isRunning && queue.Count > 0)
+        {
+            currentNode = queue.Dequeue();
+            currentNode.isExplored = true;
+
+            yield return new WaitForSeconds(gameManager.searchWait);
+            gameManager.tileVisualizer.VisualizeExploration(gameManager.allTiles[currentNode.coordinate]);
+
+            ExploreNeighbors();
+
+            if (currentNode.coordinate == targetNode.coordinate)
+            {
+                isRunning = false;
+            }
+        }
+
         
     }
 
-    // Update is called once per frame
-    void Update()
+
+    List<Node> BuildPath()
     {
-        
+        List<Node> path = new List<Node>();
+
+        Node current = gameManager.allNodes[targetCoordinate];
+        path.Add(current);
+        current.isPath = true;
+
+        while (current.parent != null)
+        {
+            current = current.parent;
+            path.Add(current);
+            current.isPath = true;
+        }
+
+        path.Reverse();
+
+        return path;
     }
+
+
+
+
+
+
+
+
 }
