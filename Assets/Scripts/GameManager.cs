@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
 
     public Dictionary<Vector2Int, Tile> allTiles = new Dictionary<Vector2Int, Tile>();
     public Dictionary<Vector2Int, Node> allNodes = new Dictionary<Vector2Int, Node>();
-
+    public Dictionary<Vector2Int, Node> walls = new Dictionary<Vector2Int, Node>();
 
     [SerializeField] BFS bfs;
 
@@ -28,15 +28,21 @@ public class GameManager : MonoBehaviour
 
     public void Reset()
     {
-        foreach (KeyValuePair<Vector2Int, Tile> item in allTiles)
+        foreach (KeyValuePair<Vector2Int, Node> item in allNodes)
         {
-            item.Value.ResetTile();
-        }
+            Vector2Int coor = item.Key;
+            if (!walls.ContainsKey(coor))
+            {
+                item.Value.Reset();
+                allTiles[coor].ResetTile();
+            }                       
+        }       
 
-        foreach (KeyValuePair<Vector2Int,Node> item in allNodes)
-        {
-            item.Value.Reset();
-        }        
+    }
+
+    void ClearWalls()
+    {
+
     }
 
 
@@ -53,21 +59,10 @@ public class GameManager : MonoBehaviour
 
     public void Visualize()
     {       
-        List<Node> path = bfs.GetPath();
-
+        bfs.BuildPath();        
         startTile.SetImage(startTile.startImage);
-        targetTile.SetImage(targetTile.targetImage);
-
-        foreach (Node node in path)
-        {
-            Debug.Log(node.coordinate);
-            Tile pathTile = allTiles[node.coordinate];
-            //pathTile.GetComponent<SpriteRenderer>().color = pathTile.pathColor;
-
-            tileVisualizer.VisualizeExploration(pathTile);
-        }       
-
-
+        targetTile.SetImage(targetTile.targetImage);               
+       
     }
     
 

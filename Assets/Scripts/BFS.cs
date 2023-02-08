@@ -17,6 +17,10 @@ public class BFS : MonoBehaviour
     Vector2Int[] directions = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
     // TRAVERSE PRIORITY
 
+    List<Node> path;
+
+    bool isRunning;    
+
     GameManager gameManager;
     private void Awake()
     {
@@ -38,12 +42,12 @@ public class BFS : MonoBehaviour
     }
 
 
-    public List<Node> GetPath()
+    public void BuildPath()
     {
         gameManager.Reset();
         Setup();        
         BreadthFirstSearch();
-        return BuildPath();
+        //return BuildPath();
     }
 
 
@@ -64,8 +68,7 @@ public class BFS : MonoBehaviour
 
         foreach (Node neighbor in neighbors)
         {
-            //gridManager.BlockNode(neighbor.position);
-
+            
             if (!searchedNodes.ContainsKey(neighbor.coordinate) && neighbor.isWalkable)
             {
                 neighbor.parent = currentNode;
@@ -81,39 +84,13 @@ public class BFS : MonoBehaviour
         StartCoroutine(BreadtFirstSearchCO());
     }
 
-    /*
-    void BreadthFirstSearch()
-    {
-        queue.Clear();
-        searchedNodes.Clear();
-
-
-        bool isRunning = true;
-        queue.Enqueue(startNode);
-        searchedNodes.Add(startNode.coordinate, startNode);
-
-        while (isRunning && queue.Count > 0)
-        {
-            currentNode = queue.Dequeue();
-            currentNode.isExplored = true;
-            ExploreNeighbors();
-
-            if (currentNode.coordinate == targetNode.coordinate)
-            {
-                isRunning = false;
-            }
-        }
-
-    }
-    */
-
     IEnumerator BreadtFirstSearchCO()
     {
         queue.Clear();
         searchedNodes.Clear();
 
 
-        bool isRunning = true;
+        isRunning = true;
         queue.Enqueue(startNode);        
         searchedNodes.Add(startNode.coordinate, startNode);
               
@@ -133,14 +110,16 @@ public class BFS : MonoBehaviour
                 isRunning = false;
             }
         }
-
+        isRunning = false;
+        GetPath();
+        StartCoroutine(gameManager.tileVisualizer.VisualizePathCo(path));
         
     }
 
 
-    List<Node> BuildPath()
+    List<Node> GetPath()
     {
-        List<Node> path = new List<Node>();
+        path = new List<Node>();
 
         Node current = gameManager.allNodes[targetCoordinate];
         path.Add(current);
@@ -150,12 +129,13 @@ public class BFS : MonoBehaviour
         {
             current = current.parent;
             path.Add(current);
+            Debug.Log("BFS Inside Path Length:" + path.Count);
             current.isPath = true;
         }
-
+        
         path.Reverse();
-
         return path;
+        
     }
 
 

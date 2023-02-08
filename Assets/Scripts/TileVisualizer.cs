@@ -6,6 +6,7 @@ public class TileVisualizer : MonoBehaviour
 {
 
     [SerializeField] [Range(0f, 2.5f)] float lerpTime;
+    [SerializeField] [Range(0f, 1f)] float pathBuildWait;
     [SerializeField] ParticleSystem exploreVFX;
 
 
@@ -13,11 +14,17 @@ public class TileVisualizer : MonoBehaviour
     [SerializeField] public Color defaultColor;
     [SerializeField] public Color pathColor;
     [SerializeField] Color[] visitedColors;
-    [SerializeField] Color wallColor;
+    [SerializeField] public Color wallColor;
 
 
     public List<Tile> tilesInProcess = new List<Tile>();
 
+    GameManager gameManager;
+
+    public void Awake()
+    {
+        gameManager = FindObjectOfType<GameManager>();
+    }
 
     public void VisualizeExploration(Tile tile)
     {
@@ -28,9 +35,22 @@ public class TileVisualizer : MonoBehaviour
     }
 
 
-    public void VisualizePath(Tile tile)
+    public IEnumerator VisualizePathCo(List<Node> path)
     {
-        ChangeColor(tile, pathColor);
+        List<Tile> pathTiles = new List<Tile>();
+
+        for (int i = 0; i < path.Count; i++)
+        {
+            pathTiles.Add(gameManager.allTiles[path[i].coordinate]);
+        }
+
+        yield return new WaitForSeconds(0.5f);
+        for (int i = 0; i < pathTiles.Count; i++)
+        {
+            Tile tile = pathTiles[i];
+            ChangeColor(tile, pathColor);
+            yield return new WaitForSeconds(pathBuildWait);
+        }        
     }
 
     private void ChangeColor(Tile tile, Color targetColor)

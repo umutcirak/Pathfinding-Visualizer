@@ -25,5 +25,10 @@ public class Node
         isPath = false;
         parent = null;
     }
+
+    public void Block()
+    {
+        isWalkable = false;
+    }
    
 }

@@ -57,14 +57,30 @@ public class Tile : MonoBehaviour
                     SetImage(targetImage);
                     gameManager.targetTile = this;
                 }
-
                 
-            }
-           
-        }
-               
-
+            }           
+        }           
     }
+
+    // Create Wall
+    private void OnMouseEnter()
+    {
+        if (gameManager.IsProcessing()) { return; }
+
+        //Debug.Log("On Wall");
+        
+        if (Input.GetMouseButton(1))
+        {
+            if(gameManager.walls.ContainsKey(coordinate)) { return; }
+
+            Node wall = gameManager.allNodes[coordinate];
+            wall.Block();
+            gameManager.walls.Add(coordinate,wall);          
+            GetComponent<SpriteRenderer>().color = tileVisualizer.wallColor;
+        }
+    }
+
+    
 
 
     public void SetImage(Sprite image)
