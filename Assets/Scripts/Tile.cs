@@ -26,9 +26,11 @@ public class Tile : MonoBehaviour
    
 
 
+    // Set Start - Target
     public void OnMouseDown()
     {  
-        if(gameManager.IsProcessing()) { return; }
+        if(gameManager.IsProcessingAlgorithm()) { return; }
+        if(gameManager.IsWall(coordinate)) { return;  }
 
         if(Input.GetMouseButtonDown(0))
         {
@@ -36,10 +38,7 @@ public class Tile : MonoBehaviour
             bool isTargetSelected = gameManager.targetTile != null;
 
             if (isStartSelected && isTargetSelected)
-            {
-                //gameManager.startTile.ResetTile();
-                //gameManager.targetTile.ResetTile();
-
+            {               
                 gameManager.Reset();
 
                 gameManager.startTile = null;
@@ -64,19 +63,19 @@ public class Tile : MonoBehaviour
 
     // Create Wall
     private void OnMouseEnter()
-    {
-        if (gameManager.IsProcessing()) { return; }
-
-        //Debug.Log("On Wall");
-        
+    {     
+               
         if (Input.GetMouseButton(1))
         {
-            if(gameManager.walls.ContainsKey(coordinate)) { return; }
+            if (gameManager.IsProcessingAlgorithm()) { return; }
+            if (gameManager.IsMainTile(coordinate)) { return;  }
+            if (gameManager.walls.ContainsKey(coordinate)) { return; }
 
             Node wall = gameManager.allNodes[coordinate];
             wall.Block();
-            gameManager.walls.Add(coordinate,wall);          
-            GetComponent<SpriteRenderer>().color = tileVisualizer.wallColor;
+            gameManager.walls.Add(coordinate,wall);
+
+            StartCoroutine(tileVisualizer.VisualizeWallCo(this));
         }
     }
 
@@ -90,7 +89,6 @@ public class Tile : MonoBehaviour
 
     public void ResetTile()
     {
-        Debug.Log("Resetted");
         GetComponent<SpriteRenderer>().sprite = defaultImage;
         GetComponent<SpriteRenderer>().color = tileVisualizer.defaultColor;           
           

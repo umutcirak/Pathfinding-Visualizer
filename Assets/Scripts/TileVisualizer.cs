@@ -8,6 +8,7 @@ public class TileVisualizer : MonoBehaviour
     [SerializeField] [Range(0f, 2.5f)] float lerpTime;
     [SerializeField] [Range(0f, 1f)] float pathBuildWait;
     [SerializeField] ParticleSystem exploreVFX;
+    [SerializeField] GameObject circlePrefab;
 
 
     [Header("Color Settings")]
@@ -18,6 +19,7 @@ public class TileVisualizer : MonoBehaviour
 
 
     public List<Tile> tilesInProcess = new List<Tile>();
+    public List<Tile> wallsInProcess = new List<Tile>();
 
     GameManager gameManager;
 
@@ -32,6 +34,30 @@ public class TileVisualizer : MonoBehaviour
         Destroy(vfx, vfx.main.duration);
         vfx.transform.parent = tile.transform;
         ChangeColor(tile, visitedColors);        
+    }
+
+    public IEnumerator VisualizeWallCo(Tile tile)
+    {
+        wallsInProcess.Add(tile);
+
+        GameObject circleFX = Instantiate(circlePrefab, tile.transform.position, Quaternion.identity);
+
+        float growthRate = 5f;
+        float growthPeriod = 1f;
+
+        Vector3 originalScale = circleFX.transform.localScale;
+        Vector3 targetScale = originalScale * growthRate;
+
+        float timer = 0.0f;
+        while (timer <= growthPeriod)
+        {
+            circleFX.transform.localScale = Vector3.Lerp(originalScale, targetScale, timer);
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        Destroy(circleFX);
+        tile.GetComponent<SpriteRenderer>().color = wallColor;
+        wallsInProcess.Remove(tile);
     }
 
 

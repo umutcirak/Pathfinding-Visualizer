@@ -16,16 +16,18 @@ public class GameManager : MonoBehaviour
 
 
     [HideInInspector] public TileVisualizer tileVisualizer;
-
     [Range(0f, 0.5f)] public float searchWait;
+
+  
 
     private void Awake()
     {
         tileVisualizer = FindObjectOfType<TileVisualizer>();
     }
+          
 
 
-
+   
     public void Reset()
     {
         foreach (KeyValuePair<Vector2Int, Node> item in allNodes)
@@ -38,13 +40,23 @@ public class GameManager : MonoBehaviour
             }                       
         }       
 
-    }
-
-    void ClearWalls()
+    }    
+     
+    public void ClearWalls()
     {
+        if(IsProcessingWall() || IsProcessingAlgorithm() ) { return; }
+        
 
+        foreach (KeyValuePair<Vector2Int, Node> item in walls)
+        {
+            Vector2Int coor = item.Key;
+            item.Value.Reset();
+            allTiles[coor].ResetTile();
+        }      
+
+        walls.Clear();
     }
-
+    
 
     //DEBUG
     public void PrintStartNode()
@@ -59,6 +71,8 @@ public class GameManager : MonoBehaviour
 
     public void Visualize()
     {       
+        if( !CanStart()) { return; }
+
         bfs.BuildPath();        
         startTile.SetImage(startTile.startImage);
         targetTile.SetImage(targetTile.targetImage);               
@@ -66,13 +80,34 @@ public class GameManager : MonoBehaviour
     }
     
 
-    public bool IsProcessing()
+    public bool IsProcessingAlgorithm()
     {
         return tileVisualizer.tilesInProcess.Count != 0;
     }
+    public bool IsProcessingWall()
+    {
+        return tileVisualizer.wallsInProcess.Count != 0;
+    }
+
+    bool CanStart()
+    {
+        return startTile != null && targetTile != null;
+    }
 
 
+    public bool IsWall(Vector2Int coor)
+    {
+        return walls.ContainsKey(coor);
+    }
 
+    public bool IsMainTile(Vector2Int coor)
+    {
+        bool isStart = startTile.coordinate == coor;
+        bool isTarget = targetTile.coordinate == coor;
+
+        return isStart || isTarget;
+        
+    }
 
 
 }
