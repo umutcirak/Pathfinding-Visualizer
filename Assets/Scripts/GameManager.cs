@@ -18,15 +18,14 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public TileVisualizer tileVisualizer;
     [Range(0f, 0.5f)] public float searchWait;
 
-  
+
+    [HideInInspector] public bool isPointMoving = false;
 
     private void Awake()
     {
         tileVisualizer = FindObjectOfType<TileVisualizer>();
     }
           
-
-
    
     public void Reset()
     {
@@ -100,14 +99,20 @@ public class GameManager : MonoBehaviour
         return walls.ContainsKey(coor);
     }
 
-    public bool IsMainTile(Vector2Int coor)
-    {
-        bool isStart = startTile.coordinate == coor;
-        bool isTarget = targetTile.coordinate == coor;
-
-        return isStart || isTarget;
-        
+    public bool IsStartTile(Vector2Int coor)
+    {   
+        return startTile.coordinate == coor;        
     }
 
+    public bool IsTargetTile(Vector2Int coor)
+    {
+        return targetTile.coordinate == coor;
+    }
+
+
+    public void ReloadScene()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+    }
 
 }

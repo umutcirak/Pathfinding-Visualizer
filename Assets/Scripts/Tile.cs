@@ -26,13 +26,14 @@ public class Tile : MonoBehaviour
    
 
 
-    // Set Start - Target
+    
     public void OnMouseDown()
     {  
         if(gameManager.IsProcessingAlgorithm()) { return; }
         if(gameManager.IsWall(coordinate)) { return;  }
 
-        if(Input.GetMouseButtonDown(0))
+        // Set Start - Target
+        if (Input.GetMouseButtonDown(0))
         {
             bool isStartSelected = gameManager.startTile != null;
             bool isTargetSelected = gameManager.targetTile != null;
@@ -58,7 +59,8 @@ public class Tile : MonoBehaviour
                 }
                 
             }           
-        }           
+        }      
+
     }
 
     // Create Wall
@@ -68,7 +70,14 @@ public class Tile : MonoBehaviour
         if (Input.GetMouseButton(1))
         {
             if (gameManager.IsProcessingAlgorithm()) { return; }
-            if (gameManager.IsMainTile(coordinate)) { return;  }
+            if(gameManager.startTile != null)
+            {
+                if (gameManager.IsStartTile(coordinate)) { return; }
+            }
+            if (gameManager.targetTile != null)
+            {
+                if (gameManager.IsTargetTile(coordinate)) { return; }
+            }
             if (gameManager.walls.ContainsKey(coordinate)) { return; }
 
             Node wall = gameManager.allNodes[coordinate];
