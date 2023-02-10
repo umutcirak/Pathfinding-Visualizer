@@ -19,12 +19,7 @@ public class Tile : MonoBehaviour
     {
         gameManager = FindObjectOfType<GameManager>();
         tileVisualizer = FindObjectOfType<TileVisualizer>();
-    }
-        
-
-    
-   
-
+    }        
 
     
     public void OnMouseDown()

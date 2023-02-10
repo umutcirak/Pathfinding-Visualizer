@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
     [Range(0f, 0.5f)] public float searchWait;
 
 
-    [HideInInspector] public bool isPointMoving = false;
+    
 
     private void Awake()
     {

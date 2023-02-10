@@ -30,15 +30,10 @@ public class BFS : MonoBehaviour
     void Setup()
     {
         startNode = gameManager.allNodes[gameManager.startTile.coordinate];
-        targetNode = gameManager.allNodes[gameManager.targetTile.coordinate];
-
-        //DEBUG
-        Debug.Log(startNode.coordinate);
-        Debug.Log(targetNode.coordinate);
+        targetNode = gameManager.allNodes[gameManager.targetTile.coordinate];              
 
         startCoordinate = startNode.coordinate;
         targetCoordinate = targetNode.coordinate;         
-
     }
 
 
