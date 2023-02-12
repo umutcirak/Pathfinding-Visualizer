@@ -12,8 +12,12 @@ public class MovePoint : MonoBehaviour
 
     GameManager gameManager;
 
+    private int nullCoordinate = -99;
     public Vector2Int previousCoordinate;
     public Vector2Int currentCoordinate;
+
+    public float selectDuration;
+    public float timeElapsed = 0f;
 
 
 
@@ -21,14 +25,16 @@ public class MovePoint : MonoBehaviour
     {
         gameManager = FindObjectOfType<GameManager>();
     }
-      
+    private void Start()
+    {
+        previousCoordinate = new Vector2Int(nullCoordinate, nullCoordinate);
+        currentCoordinate = new Vector2Int(nullCoordinate, nullCoordinate);
+    }
 
     void Update()
     {
         MoveThePoint();   
     }
-
-
 
     void MoveThePoint()
     {
@@ -47,13 +53,15 @@ public class MovePoint : MonoBehaviour
                 Tile point = hit.collider.gameObject.GetComponent<Tile>();
 
                 if (point != null)
-                {
+                {            
+                    if(gameManager.IsWall(point.coordinate)) { return; }
+
                     // Set Pointer Coordinates
-                    if(previousCoordinate == null && currentCoordinate == null)
+                    if(previousCoordinate.x == nullCoordinate && currentCoordinate.x == nullCoordinate)
                     {
                         currentCoordinate = point.coordinate;
                     }
-                    else if(currentCoordinate != null && point.coordinate != currentCoordinate)
+                    else if(currentCoordinate.x != nullCoordinate && point.coordinate != currentCoordinate)
                     {
                         previousCoordinate = currentCoordinate;
                         currentCoordinate = point.coordinate;
@@ -63,18 +71,59 @@ public class MovePoint : MonoBehaviour
                     if (gameManager.startTile != null &&
                         currentCoordinate == gameManager.startTile.coordinate && !isStartMoving)
                     {
-                        isStartMoving = true;
+                        timeElapsed += Time.deltaTime;
+                        if(timeElapsed > selectDuration)
+                        {
+                            isStartMoving = true;
+                        }
+                        
                     }
-
+                    // Check if there is movement 
                     if (gameManager.targetTile != null &&
                         currentCoordinate == gameManager.targetTile.coordinate && !isTargetMoving)
                     {
-                        isTargetMoving = true;
+                        timeElapsed += Time.deltaTime;
+                        if (timeElapsed > selectDuration)
+                        {
+                            isTargetMoving = true;
+                        }                                     
                     }
+
+                    // Move the Tile
+                    if(previousCoordinate.x != nullCoordinate)
+                    {
+                        Tile previousTile = gameManager.allTiles[previousCoordinate];
+                        Tile nextTile = gameManager.allTiles[currentCoordinate];                        
+
+                        if (isStartMoving)
+                        {
+                            nextTile.SetImage(nextTile.startImage);
+                            gameManager.startTile = nextTile;
+
+                            previousTile.SetImage(previousTile.defaultImage);
+
+                        }
+                        else if(isTargetMoving)
+                        {
+                            nextTile.SetImage(nextTile.targetImage);
+                            gameManager.targetTile = nextTile;
+
+                            previousTile.SetImage(previousTile.defaultImage);
+
+                        }
+                        
+
+
+                    }
+
+
 
 
 
                 }
+
+
+
             }         
 
         }       
@@ -86,6 +135,9 @@ public class MovePoint : MonoBehaviour
     {
         isStartMoving = false;
         isTargetMoving = false;
+        timeElapsed = 0f;
+        currentCoordinate = new Vector2Int(nullCoordinate, nullCoordinate);
+        previousCoordinate = new Vector2Int(nullCoordinate, nullCoordinate);
     }
     
 

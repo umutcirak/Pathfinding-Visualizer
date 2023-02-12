@@ -2652,6 +2652,8 @@ MonoBehaviour:
   isTargetMoving: 0
   previousCoordinate: {x: 0, y: 0}
   currentCoordinate: {x: 0, y: 0}
+  selectDuration: 0.35
+  timeElapsed: 0
 --- !u!4 &1512985030
 Transform:
   m_ObjectHideFlags: 0
@@ -3466,7 +3468,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9036773362873220028, guid: eae4de08c5de82e46a3c6944385714d2, type: 3}
       propertyPath: colorLerpTime
-      value: 1
+      value: 0.35
       objectReference: {fileID: 0}
     - target: {fileID: 9036773362873220028, guid: eae4de08c5de82e46a3c6944385714d2, type: 3}
       propertyPath: pathBuildWait

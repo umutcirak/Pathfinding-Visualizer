@@ -29,14 +29,15 @@ public class Tile : MonoBehaviour
 
         // Set Start - Target
         if (Input.GetMouseButtonDown(0))
-        {
+        {           
             bool isStartSelected = gameManager.startTile != null;
             bool isTargetSelected = gameManager.targetTile != null;
 
             if (isStartSelected && isTargetSelected)
-            {               
-                gameManager.Reset();
+            {
+                if (gameManager.IsStartTile(coordinate) || gameManager.IsTargetTile(coordinate)) { return; }
 
+                gameManager.Reset();
                 gameManager.startTile = null;
                 gameManager.targetTile = null;
             }
@@ -49,6 +50,8 @@ public class Tile : MonoBehaviour
                 }
                 else if(isStartSelected && !isTargetSelected)
                 {
+                    if (gameManager.IsStartTile(coordinate)) { return; }
+
                     SetImage(targetImage);
                     gameManager.targetTile = this;
                 }
