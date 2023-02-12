@@ -102,8 +102,7 @@ public class MovePoint : MonoBehaviour
                             nextTile.SetImage(nextTile.startImage);
                             gameManager.startTile = nextTile;
 
-                            previousTile.SetImage(previousTile.defaultImage);
-                            gameManager.Visualize();
+                            previousTile.SetImage(previousTile.defaultImage);                           
                                                         
                         }
                         else if(isTargetMoving)
@@ -111,10 +110,13 @@ public class MovePoint : MonoBehaviour
                             nextTile.SetImage(nextTile.targetImage);
                             gameManager.targetTile = nextTile;
 
-                            previousTile.SetImage(previousTile.defaultImage);
+                            previousTile.SetImage(previousTile.defaultImage);                           
+                        }
 
-                           
-                        }      
+                        if (IsPointMoving)
+                        {
+                            gameManager.Visualize();
+                        }
                                                 
                     }
                 }

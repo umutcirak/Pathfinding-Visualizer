@@ -13,7 +13,7 @@ public class TileVisualizer : MonoBehaviour
     [Header("Color Settings")]
     [SerializeField] public Color defaultColor;
     [SerializeField] public Color pathColor;
-    [SerializeField] Color[] visitedColors;
+    [SerializeField] public Color[] visitedColors;
     [SerializeField] public Color wallColor;
 
 
@@ -118,9 +118,34 @@ public class TileVisualizer : MonoBehaviour
             StartCoroutine(ColorChangeCO(tile, targetColors[i]));
             yield return new WaitForSeconds(colorLerpTime);
         }       
-
     }
 
+
+    public void ChangeColorRuntime(Tile tile, Color color)
+    {
+        SpriteRenderer sr = tile.GetComponent<SpriteRenderer>();
+        sr.color = color;
+    }
+
+
+    public void VisualizePathRuntime(List<Node> path)
+    {
+        List<Tile> pathTiles = new List<Tile>();
+
+        for (int i = 0; i < path.Count; i++)
+        {
+            pathTiles.Add(gameManager.allTiles[path[i].coordinate]);
+        }
+
+        for (int i = 0; i < pathTiles.Count; i++)
+        {
+            Tile tile = pathTiles[i];
+            ChangeColorRuntime(tile, pathColor);
+        }
+        gameManager.isPathDone = true;
+
+
+    }
 
 
 }

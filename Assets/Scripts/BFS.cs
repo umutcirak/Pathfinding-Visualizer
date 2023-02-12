@@ -18,6 +18,7 @@ public class BFS : MonoBehaviour
     // TRAVERSE PRIORITY
 
     List<Node> path;
+    MovePoint pointMover;
 
     bool isRunning;    
 
@@ -25,6 +26,7 @@ public class BFS : MonoBehaviour
     private void Awake()
     {
         gameManager = FindObjectOfType<GameManager>();
+        pointMover = FindObjectOfType<MovePoint>(); 
     }  
 
     void Setup()
@@ -94,8 +96,24 @@ public class BFS : MonoBehaviour
             currentNode = queue.Dequeue();
             currentNode.isExplored = true;
 
-            yield return new WaitForSeconds(gameManager.searchWait);
-            gameManager.tileVisualizer.VisualizeExploration(gameManager.allTiles[currentNode.coordinate]);
+            // Visualize Exploration
+            if (pointMover.IsPointMoving)
+            {
+                yield return null;
+                Tile tile = gameManager.allTiles[currentNode.coordinate];
+                Color exploreColor = gameManager.tileVisualizer.
+                    visitedColors[gameManager.tileVisualizer.visitedColors.Length - 1];
+
+                gameManager.tileVisualizer.ChangeColorRuntime(tile, exploreColor);
+
+            }
+            else
+            {
+                yield return new WaitForSeconds(gameManager.searchWait);
+                gameManager.tileVisualizer.VisualizeExploration(gameManager.allTiles[currentNode.coordinate]);
+            }
+
+           
 
             ExploreNeighbors();
 
@@ -106,7 +124,14 @@ public class BFS : MonoBehaviour
         }
         isRunning = false;
         GetPath();
-        StartCoroutine(gameManager.tileVisualizer.VisualizePathCo(path));
+        if (pointMover.IsPointMoving)
+        {            
+            gameManager.tileVisualizer.VisualizePathRuntime(path);
+        }
+        else
+        {
+            StartCoroutine(gameManager.tileVisualizer.VisualizePathCo(path));
+        }       
         
     }
 

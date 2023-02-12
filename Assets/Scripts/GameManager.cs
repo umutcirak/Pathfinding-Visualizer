@@ -19,8 +19,7 @@ public class GameManager : MonoBehaviour
     [Range(0f, 0.5f)] public float searchWait;
 
     public bool isPathDone = false;
-
-
+    
     
 
     private void Awake()
