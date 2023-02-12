@@ -18,6 +18,8 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public TileVisualizer tileVisualizer;
     [Range(0f, 0.5f)] public float searchWait;
 
+    public bool isPathDone = false;
+
 
     
 
@@ -37,7 +39,8 @@ public class GameManager : MonoBehaviour
                 item.Value.Reset();
                 allTiles[coor].ResetTile();
             }                       
-        }       
+        }
+        isPathDone = false;
 
     }    
      
@@ -74,7 +77,7 @@ public class GameManager : MonoBehaviour
 
         bfs.BuildPath();        
         startTile.SetImage(startTile.startImage);
-        targetTile.SetImage(targetTile.targetImage);               
+        targetTile.SetImage(targetTile.targetImage);       
        
     }
     

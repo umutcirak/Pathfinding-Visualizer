@@ -79,7 +79,8 @@ public class TileVisualizer : MonoBehaviour
             Tile tile = pathTiles[i];
             ChangeColor(tile, pathColor);
             yield return new WaitForSeconds(pathStep);
-        }        
+        }
+        gameManager.isPathDone = true;
     }
 
     private void ChangeColor(Tile tile, Color targetColor)

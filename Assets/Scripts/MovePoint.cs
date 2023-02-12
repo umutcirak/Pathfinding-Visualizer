@@ -4,11 +4,10 @@ using UnityEngine;
 
 public class MovePoint : MonoBehaviour
 {
-    
-     public bool isStartMoving = false;
-     public bool isTargetMoving = false;
-     public bool IsPointMoving { get { return isStartMoving || isTargetMoving; } }
-
+        
+    public bool isStartMoving = false;
+    public bool isTargetMoving = false;
+    public bool IsPointMoving { get { return isStartMoving || isTargetMoving; } }
 
     GameManager gameManager;
 
@@ -18,6 +17,8 @@ public class MovePoint : MonoBehaviour
 
     public float selectDuration;
     public float timeElapsed = 0f;
+
+    public bool isChanged;
 
 
 
@@ -32,7 +33,7 @@ public class MovePoint : MonoBehaviour
     }
 
     void Update()
-    {
+    {        
         MoveThePoint();   
     }
 
@@ -54,7 +55,8 @@ public class MovePoint : MonoBehaviour
 
                 if (point != null)
                 {            
-                    if(gameManager.IsWall(point.coordinate)) { return; }
+                    if(gameManager.IsWall(point.coordinate)) { return; }                    
+                    if (IsChanged(point.coordinate)) { return; }
 
                     // Set Pointer Coordinates
                     if(previousCoordinate.x == nullCoordinate && currentCoordinate.x == nullCoordinate)
@@ -101,7 +103,8 @@ public class MovePoint : MonoBehaviour
                             gameManager.startTile = nextTile;
 
                             previousTile.SetImage(previousTile.defaultImage);
-
+                            gameManager.Visualize();
+                                                        
                         }
                         else if(isTargetMoving)
                         {
@@ -110,24 +113,29 @@ public class MovePoint : MonoBehaviour
 
                             previousTile.SetImage(previousTile.defaultImage);
 
-                        }
-                        
-
-
+                           
+                        }      
+                                                
                     }
-
-
-
-
-
                 }
-
-
-
+                
             }         
 
         }       
 
+    }
+
+    bool IsChanged(Vector2Int coor)
+    {
+        if(currentCoordinate.x == coor.x && currentCoordinate.y == coor.y
+            && previousCoordinate.x != nullCoordinate)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
 
@@ -135,6 +143,7 @@ public class MovePoint : MonoBehaviour
     {
         isStartMoving = false;
         isTargetMoving = false;
+        isChanged = false;
         timeElapsed = 0f;
         currentCoordinate = new Vector2Int(nullCoordinate, nullCoordinate);
         previousCoordinate = new Vector2Int(nullCoordinate, nullCoordinate);

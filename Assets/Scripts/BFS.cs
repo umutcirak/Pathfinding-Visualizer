@@ -41,8 +41,7 @@ public class BFS : MonoBehaviour
     {
         gameManager.Reset();
         Setup();        
-        BreadthFirstSearch();
-        //return BuildPath();
+        BreadthFirstSearch();        
     }
 
 

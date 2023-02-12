@@ -2652,7 +2652,7 @@ MonoBehaviour:
   isTargetMoving: 0
   previousCoordinate: {x: 0, y: 0}
   currentCoordinate: {x: 0, y: 0}
-  selectDuration: 0.35
+  selectDuration: 0.15
   timeElapsed: 0
 --- !u!4 &1512985030
 Transform:
