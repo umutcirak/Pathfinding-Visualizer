@@ -101,10 +101,7 @@ MonoBehaviour:
   defaultImage: {fileID: 21300000, guid: 46980981af4b0e143badf0d1dc23c61b, type: 3}
   startImage: {fileID: 21300000, guid: 6930561f143fc0e43affe3613c345f98, type: 3}
   targetImage: {fileID: 21300000, guid: 54aa871428b3b234aaddbb721a8e7a2c, type: 3}
-  defaultColor: {r: 1, g: 1, b: 1, a: 1}
-  pathColor: {r: 1, g: 0.9960785, b: 0, a: 1}
-  visitedColor: {r: 0.66185296, g: 1, b: 0, a: 1}
-  wallColor: {r: 0, g: 0, b: 0, a: 1}
+  stopImage: {fileID: 21300000, guid: 5dcbc088547f67a4296f431a6f80a26e, type: 3}
   coordinate: {x: 0, y: 0}
 --- !u!61 &9067673878079040690
 BoxCollider2D:

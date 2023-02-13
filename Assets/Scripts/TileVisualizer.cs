@@ -143,9 +143,8 @@ public class TileVisualizer : MonoBehaviour
             ChangeColorRuntime(tile, pathColor);
         }
         gameManager.isPathDone = true;
-
-
     }
+
 
 
 }

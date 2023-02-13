@@ -147,8 +147,7 @@ public class BFS : MonoBehaviour
         while (current.parent != null)
         {
             current = current.parent;
-            path.Add(current);
-            Debug.Log("BFS Inside Path Length:" + path.Count);
+            path.Add(current);            
             current.isPath = true;
         }
         

@@ -8,9 +8,7 @@ public class MovePoint : MonoBehaviour
     public bool isStartMoving = false;
     public bool isTargetMoving = false;
     public bool IsPointMoving { get { return isStartMoving || isTargetMoving; } }
-
-    GameManager gameManager;
-
+       
     private int nullCoordinate = -99;
     public Vector2Int previousCoordinate;
     public Vector2Int currentCoordinate;
@@ -21,6 +19,7 @@ public class MovePoint : MonoBehaviour
     public bool isChanged;
 
 
+    GameManager gameManager;
 
     private void Awake()
     {
@@ -55,7 +54,7 @@ public class MovePoint : MonoBehaviour
 
                 if (point != null)
                 {            
-                    if(gameManager.IsWall(point.coordinate)) { return; }                    
+                    if(gameManager.IsWall(point.coordinate) || gameManager.IsStopTile(point.coordinate)) { return; }                    
                     if (IsChanged(point.coordinate)) { return; }
 
                     // Set Pointer Coordinates

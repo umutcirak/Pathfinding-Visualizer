@@ -8,63 +8,85 @@ public class Tile : MonoBehaviour
     [SerializeField] public Sprite defaultImage;
     [SerializeField] public Sprite startImage;
     [SerializeField] public Sprite targetImage;
+    [SerializeField] public Sprite stopImage;
        
 
     public Vector2Int coordinate;
 
     GameManager gameManager;
     TileVisualizer tileVisualizer;
+    UiVisualizer uiVisualizer;
+
    
     void Awake()
     {
         gameManager = FindObjectOfType<GameManager>();
         tileVisualizer = FindObjectOfType<TileVisualizer>();
+        uiVisualizer = FindObjectOfType<UiVisualizer>();
     }        
 
     
     public void OnMouseDown()
     {  
         if(gameManager.IsProcessingAlgorithm()) { return; }
-        if(gameManager.IsWall(coordinate)) { return;  }
+        if(gameManager.IsWall(coordinate)) { return;  }      
 
-        // Set Start - Target
+        // Set Start - Target - Stop
         if (Input.GetMouseButtonDown(0))
         {           
             bool isStartSelected = gameManager.startTile != null;
             bool isTargetSelected = gameManager.targetTile != null;
+            bool isStopSelected = gameManager.stopTile != null;
 
-            if (isStartSelected && isTargetSelected)
+            if (!gameManager.isStopPlacing)
             {
-                if (gameManager.IsStartTile(coordinate) || gameManager.IsTargetTile(coordinate)) { return; }
+                if(gameManager.stopTile != null)
+                {
+                    if (gameManager.IsStopTile(coordinate)) { return; }
+                }
 
-                gameManager.Reset();
-                gameManager.startTile = null;
-                gameManager.targetTile = null;
+                if (isStartSelected && isTargetSelected)
+                {
+                    if (gameManager.IsStartTile(coordinate) || gameManager.IsTargetTile(coordinate)) { return; }
+
+                    gameManager.Reset();
+                    gameManager.startTile = null;
+                    gameManager.targetTile = null;
+                }
+                else
+                {
+                    if (!isStartSelected && !isTargetSelected)
+                    {
+                        SetImage(startImage);
+                        gameManager.startTile = this;
+                    }
+                    else if (isStartSelected && !isTargetSelected)
+                    {
+                        if (gameManager.IsStartTile(coordinate)) { return; }
+
+                        SetImage(targetImage);
+                        gameManager.targetTile = this;
+                    }
+
+                }
             }
-            else 
+            else
             {
-                if(!isStartSelected && !isTargetSelected)
-                {
-                    SetImage(startImage);
-                    gameManager.startTile = this;
-                }
-                else if(isStartSelected && !isTargetSelected)
-                {
-                    if (gameManager.IsStartTile(coordinate)) { return; }
-
-                    SetImage(targetImage);
-                    gameManager.targetTile = this;
-                }
+                SetImage(stopImage);
+                gameManager.stopTile = this;
+                gameManager.isStopPlacing = false;
+                uiVisualizer.ChangeStopButton(2);
                 
-            }           
+            }
+           
+                        
         }      
 
     }
 
     // Create Wall
     private void OnMouseEnter()
-    {     
-               
+    {                    
         if (Input.GetMouseButton(1))
         {
             if (gameManager.IsProcessingAlgorithm()) { return; }
@@ -86,7 +108,9 @@ public class Tile : MonoBehaviour
         }
     }
 
-    
+
+   
+
 
 
     public void SetImage(Sprite image)
@@ -101,6 +125,7 @@ public class Tile : MonoBehaviour
           
     }
 
+   
 
 
 
