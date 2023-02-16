@@ -13,28 +13,29 @@ public class GameManager : MonoBehaviour
     public Dictionary<Vector2Int, Node> allNodes = new Dictionary<Vector2Int, Node>();
     public Dictionary<Vector2Int, Node> walls = new Dictionary<Vector2Int, Node>();
 
-    [SerializeField] BFS bfs;
-    [SerializeField] DFS dfs;
+
+    [Header("Algorithms")]
+    [SerializeField] BFS bfs;    
     [SerializeField] AStar a_star;
 
 
-    [HideInInspector] public TileVisualizer tileVisualizer;
-    [HideInInspector] public UiVisualizer uiVisualizer;
-
+    [Header("Settings")]
     [Range(0f, 0.5f)] public float searchWait;
-
     public bool isPathDone = false;
-
     public bool isStopPlacing;
-
     public bool doubleSearch = false;
     public bool secondSearchStarted = false;
+
+    [HideInInspector] public TileVisualizer tileVisualizer;
+    [HideInInspector] public UiVisualizer uiVisualizer;
+    AlgorithmPicker algorithmPicker;
 
 
     private void Awake()
     {
         tileVisualizer = FindObjectOfType<TileVisualizer>();
         uiVisualizer = FindObjectOfType<UiVisualizer>();
+        algorithmPicker = FindObjectOfType<AlgorithmPicker>();
     }
           
    
@@ -100,9 +101,21 @@ public class GameManager : MonoBehaviour
 
     public void Visualize()
     {       
-        if( !CanStart()) { return; }
+        if( !CanStart()) { return; }        
+              
+        switch(algorithmPicker.selectedAlgorithm)
+        {
+            case AlgorithmPicker.AlgorithmType.None:
+                return;
+                
+            case AlgorithmPicker.AlgorithmType.A_Star:
+                a_star.BuildPath();
+                break;
+            case AlgorithmPicker.AlgorithmType.BFS:
+                bfs.BuildPath();
+                break;
+        } 
 
-        a_star.BuildPath();        
         startTile.SetImage(startTile.startImage);
         targetTile.SetImage(targetTile.targetImage);
         if(stopTile!= null)

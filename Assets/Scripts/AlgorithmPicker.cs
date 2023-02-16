@@ -1,43 +1,60 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class AlgorithmPicker : MonoBehaviour
 {
-    public enum AlgorithmType { None, A_Star, BFS, DFS}
-    AlgorithmType selectedAlgorithm = AlgorithmType.None;
+    [SerializeField] GameObject listAlgorithms;
+    [SerializeField] TextMeshProUGUI visualizeText; 
 
+    public enum AlgorithmType { None, A_Star, BFS, DFS}
+    public AlgorithmType selectedAlgorithm = AlgorithmType.None;
+
+
+    private void Start()
+    {
+        SetVisualizeText();
+    }
 
     public void SelectAlgorithm(int type)
     {
         this.selectedAlgorithm = (AlgorithmType)type;
-    }
-    
 
-    /*
-     public void SelectAlgorithm(string algorithm)
+        DeActiveList();
+        SetVisualizeText();
+    }  
+     
+    public void DeActiveList()
     {
-        switch (algorithm)
+        listAlgorithms.SetActive(false);
+    }
+
+    public void ChangeVisibility()
+    {
+        bool isActive = listAlgorithms.activeSelf;
+        listAlgorithms.SetActive(!isActive);
+    }
+
+
+    private void SetVisualizeText()
+    {        
+        switch(selectedAlgorithm)
         {
-            case "A*":
-                selectedAlgorithm = AlgorithmType.A_Star;
+            case AlgorithmType.None:
+                visualizeText.text = "Visualize";
                 break;
-            case "BFS":
-                selectedAlgorithm = AlgorithmType.A_Star;
+            case AlgorithmType.A_Star:
+                visualizeText.text = "Visualize A*";
                 break;
-            case "DFS":
-                selectedAlgorithm = AlgorithmType.DFS;
+            case AlgorithmType.BFS:
+                visualizeText.text = "Visualize BFS";
                 break;
             default:
-                selectedAlgorithm = AlgorithmType.None;
+                
                 break;
         }
     }
-     */
-
-
-
-
 
 
 }
