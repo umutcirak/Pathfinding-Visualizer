@@ -18,19 +18,17 @@ public class BFS : MonoBehaviour
     // TRAVERSE PRIORITY
 
     List<Node> path;
-    MovePoint pointMover;
-
     bool isRunning;    
 
     GameManager gameManager;
-
-    bool doubleSearch = false;
-    bool secondSearchStarted = false;
+    MovePoint pointMover;
+    TileVisualizer tileVisualizer;
 
     private void Awake()
     {
         gameManager = FindObjectOfType<GameManager>();
-        pointMover = FindObjectOfType<MovePoint>(); 
+        pointMover = FindObjectOfType<MovePoint>();
+        tileVisualizer = FindObjectOfType<TileVisualizer>();
     }  
 
     void Setup()
@@ -46,11 +44,11 @@ public class BFS : MonoBehaviour
     {
         if (gameManager.stopTile != null)
         {
-            doubleSearch = true;
+            gameManager.doubleSearch = true;
         }
         else
         {
-            doubleSearch = false;
+            gameManager.doubleSearch = false;
         }
     }
 
@@ -60,7 +58,7 @@ public class BFS : MonoBehaviour
         path = new List<Node>();
         CheckDoubleSearch();
         
-        if(!doubleSearch)
+        if(!gameManager.doubleSearch)
         {
             gameManager.Reset();
             Setup();
@@ -69,7 +67,7 @@ public class BFS : MonoBehaviour
         else
         {
             gameManager.Reset();
-            secondSearchStarted = false;
+            gameManager.secondSearchStarted = false;
 
             startNode = gameManager.allNodes[gameManager.startTile.coordinate];
             targetNode = gameManager.allNodes[gameManager.stopTile.coordinate];
@@ -138,16 +136,25 @@ public class BFS : MonoBehaviour
             {
                 yield return null;
                 Tile tile = gameManager.allTiles[currentNode.coordinate];
-                Color exploreColor = gameManager.tileVisualizer.
-                    visitedColors[gameManager.tileVisualizer.visitedColors.Length - 1];
+                Color exploreColor;
+                if (gameManager.doubleSearch && gameManager.secondSearchStarted)
+                {
+                    exploreColor = tileVisualizer.secondVisitedColors
+                        [tileVisualizer.secondVisitedColors.Length - 1];
+                }
+                else
+                {
+                    exploreColor = tileVisualizer.
+                    visitedColors[tileVisualizer.visitedColors.Length - 1];
+                }               
 
-                gameManager.tileVisualizer.ChangeColorRuntime(tile, exploreColor);
+                tileVisualizer.ChangeColorRuntime(tile, exploreColor);
 
             }
             else
             {
                 yield return new WaitForSeconds(gameManager.searchWait);
-                gameManager.tileVisualizer.VisualizeExploration(gameManager.allTiles[currentNode.coordinate]);
+                tileVisualizer.VisualizeExploration(gameManager.allTiles[currentNode.coordinate]);
             }
 
            
@@ -162,19 +169,18 @@ public class BFS : MonoBehaviour
         isRunning = false;
 
         GetPath();
-
         
         if (pointMover.IsPointMoving)
         {
-            gameManager.tileVisualizer.VisualizePathRuntime(path);
+            tileVisualizer.VisualizePathRuntime(path);
         }
-        else if ((doubleSearch && secondSearchStarted) || !doubleSearch)
+        else if ((gameManager.doubleSearch && gameManager.secondSearchStarted) || !gameManager.doubleSearch)
         {
-            StartCoroutine(gameManager.tileVisualizer.VisualizePathCo(path));
+            StartCoroutine(tileVisualizer.VisualizePathCo(path));
         }
 
         // Set Second Search
-        if (doubleSearch && !secondSearchStarted)
+        if (gameManager.doubleSearch && !gameManager.secondSearchStarted)
         {
             startNode = gameManager.allNodes[gameManager.stopTile.coordinate];
             targetNode = gameManager.allNodes[gameManager.targetTile.coordinate];
@@ -182,7 +188,7 @@ public class BFS : MonoBehaviour
             startCoordinate = startNode.coordinate;
             targetCoordinate = targetNode.coordinate;
 
-            secondSearchStarted = true;
+            gameManager.secondSearchStarted = true;
             gameManager.ResetNodes();
             BreadthFirstSearch();            
         }
@@ -200,7 +206,8 @@ public class BFS : MonoBehaviour
         Node current = gameManager.allNodes[targetCoordinate];
 
         //DoubleSearch
-        if(doubleSearch && secondSearchStarted && current.coordinate == gameManager.stopTile.coordinate)
+        if(gameManager.doubleSearch && gameManager.secondSearchStarted &&
+            current.coordinate == gameManager.stopTile.coordinate)
         {
             return null;
         }
@@ -214,7 +221,7 @@ public class BFS : MonoBehaviour
             path.Add(current);            
             current.isPath = true;
         }
-        if( (doubleSearch && secondSearchStarted) || !doubleSearch)
+        if( (gameManager.doubleSearch && gameManager.secondSearchStarted) || !gameManager.doubleSearch)
         {
             path.Reverse();
         }        

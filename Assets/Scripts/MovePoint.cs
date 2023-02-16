@@ -7,7 +7,8 @@ public class MovePoint : MonoBehaviour
         
     public bool isStartMoving = false;
     public bool isTargetMoving = false;
-    public bool IsPointMoving { get { return isStartMoving || isTargetMoving; } }
+    public bool isStopMoving = false;
+    public bool IsPointMoving { get { return isStartMoving || isTargetMoving || isStopMoving; } }
        
     private int nullCoordinate = -99;
     public Vector2Int previousCoordinate;
@@ -53,8 +54,9 @@ public class MovePoint : MonoBehaviour
                 Tile point = hit.collider.gameObject.GetComponent<Tile>();
 
                 if (point != null)
-                {            
-                    if(gameManager.IsWall(point.coordinate) || gameManager.IsStopTile(point.coordinate)) { return; }                    
+                {
+                    // || gameManager.IsStopTile(point.coordinate)
+                    if (gameManager.IsWall(point.coordinate)) { return; }                    
                     if (IsChanged(point.coordinate)) { return; }
 
                     // Set Pointer Coordinates
@@ -67,49 +69,80 @@ public class MovePoint : MonoBehaviour
                         previousCoordinate = currentCoordinate;
                         currentCoordinate = point.coordinate;
                     }
-                   
-                    // Check if there is movement 
-                    if (gameManager.startTile != null &&
-                        currentCoordinate == gameManager.startTile.coordinate && !isStartMoving)
+                    
+                    // THIS ONE
+                    if (!IsPointMoving)
                     {
-                        timeElapsed += Time.deltaTime;
-                        if(timeElapsed > selectDuration)
+                        // Check if there is movement - Start Tile
+                        if (gameManager.IsStartTile(currentCoordinate) && !isStartMoving)
                         {
-                            isStartMoving = true;
+                            timeElapsed += Time.deltaTime;
+                            if (timeElapsed > selectDuration)
+                            {
+                                isStartMoving = true;
+                            }
+
                         }
-                        
-                    }
-                    // Check if there is movement 
-                    if (gameManager.targetTile != null &&
-                        currentCoordinate == gameManager.targetTile.coordinate && !isTargetMoving)
-                    {
-                        timeElapsed += Time.deltaTime;
-                        if (timeElapsed > selectDuration)
+                        // Check if there is movement - Target Tile
+                        else if (gameManager.IsTargetTile(currentCoordinate) && !isTargetMoving)
                         {
-                            isTargetMoving = true;
-                        }                                     
-                    }
+                            timeElapsed += Time.deltaTime;
+                            if (timeElapsed > selectDuration)
+                            {
+                                isTargetMoving = true;
+                            }
+                        }
+
+                        // Check if there is movement - Stop Tile
+                        else if (gameManager.IsStopTile(currentCoordinate) && !isStopMoving)
+                        {
+                            timeElapsed += Time.deltaTime;
+                            if (timeElapsed > selectDuration)
+                            {
+                                isStopMoving = true;
+                            }
+                        }
+                    }                  
+
+
 
                     // Move the Tile
-                    if(previousCoordinate.x != nullCoordinate)
+                    if (previousCoordinate.x != nullCoordinate)
                     {
                         Tile previousTile = gameManager.allTiles[previousCoordinate];
-                        Tile nextTile = gameManager.allTiles[currentCoordinate];                        
-
-                        if (isStartMoving)
+                        Tile nextTile = gameManager.allTiles[currentCoordinate];
+                        Vector2Int coor = nextTile.coordinate;
+                        if (isStartMoving) // start
                         {
-                            nextTile.SetImage(nextTile.startImage);
-                            gameManager.startTile = nextTile;
+                            if(!gameManager.IsTargetTile(coor) && !gameManager.IsStopTile(coor))
+                            {
+                                nextTile.SetImage(nextTile.startImage);
+                                gameManager.startTile = nextTile;
 
-                            previousTile.SetImage(previousTile.defaultImage);                           
+                                previousTile.SetImage(previousTile.defaultImage);
+                            }                                                     
                                                         
                         }
-                        else if(isTargetMoving)
+                        else if(isTargetMoving) // target
                         {
-                            nextTile.SetImage(nextTile.targetImage);
-                            gameManager.targetTile = nextTile;
+                            if (!gameManager.IsStartTile(coor) && !gameManager.IsStopTile(coor))
+                            {
+                                nextTile.SetImage(nextTile.targetImage);
+                                gameManager.targetTile = nextTile;
 
-                            previousTile.SetImage(previousTile.defaultImage);                           
+                                previousTile.SetImage(previousTile.defaultImage);
+                            }                                                    
+                        }
+                        else if (isStopMoving) // stop
+                        {
+                            if (!gameManager.IsStartTile(coor) && !gameManager.IsTargetTile(coor))
+                            {
+                                nextTile.SetImage(nextTile.stopImage);
+                                gameManager.stopTile = nextTile;
+
+                                previousTile.SetImage(previousTile.defaultImage);
+                            }
+                           
                         }
 
                         if (IsPointMoving)
@@ -144,6 +177,7 @@ public class MovePoint : MonoBehaviour
     {
         isStartMoving = false;
         isTargetMoving = false;
+        isStopMoving = false;
         isChanged = false;
         timeElapsed = 0f;
         currentCoordinate = new Vector2Int(nullCoordinate, nullCoordinate);

@@ -90,14 +90,11 @@ public class Tile : MonoBehaviour
         if (Input.GetMouseButton(1))
         {
             if (gameManager.IsProcessingAlgorithm()) { return; }
-            if(gameManager.startTile != null)
-            {
-                if (gameManager.IsStartTile(coordinate)) { return; }
-            }
-            if (gameManager.targetTile != null)
-            {
-                if (gameManager.IsTargetTile(coordinate)) { return; }
-            }
+
+            if(gameManager.IsStartTile(coordinate) || gameManager.IsTargetTile(coordinate) || 
+                gameManager.IsStopTile(coordinate))
+            { return; }           
+
             if (gameManager.walls.ContainsKey(coordinate)) { return; }
 
             Node wall = gameManager.allNodes[coordinate];

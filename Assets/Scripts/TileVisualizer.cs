@@ -14,6 +14,7 @@ public class TileVisualizer : MonoBehaviour
     [SerializeField] public Color defaultColor;
     [SerializeField] public Color pathColor;
     [SerializeField] public Color[] visitedColors;
+    [SerializeField] public Color[] secondVisitedColors;
     [SerializeField] public Color wallColor;
 
 
@@ -22,11 +23,11 @@ public class TileVisualizer : MonoBehaviour
 
     private float debugWait = 0.1f;
 
-    GameManager gameManager;
+    GameManager gameManager;    
 
     public void Awake()
     {
-        gameManager = FindObjectOfType<GameManager>();
+        gameManager = FindObjectOfType<GameManager>();        
     }
 
     public void VisualizeExploration(Tile tile)
@@ -34,8 +35,15 @@ public class TileVisualizer : MonoBehaviour
         ParticleSystem vfx = Instantiate(exploreVFX, tile.transform.position, Quaternion.identity);
         vfx.transform.parent = tile.transform;
         Destroy(vfx.gameObject, vfx.duration);
-        
-        ChangeColor(tile, visitedColors);        
+
+        if(gameManager.doubleSearch && gameManager.secondSearchStarted)
+        {
+            ChangeColor(tile, secondVisitedColors);
+        }
+        else
+        {
+            ChangeColor(tile, visitedColors);
+        }               
     }
 
     public IEnumerator VisualizeWallCo(Tile tile)

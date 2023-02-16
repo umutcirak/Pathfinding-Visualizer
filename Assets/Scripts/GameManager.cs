@@ -14,6 +14,8 @@ public class GameManager : MonoBehaviour
     public Dictionary<Vector2Int, Node> walls = new Dictionary<Vector2Int, Node>();
 
     [SerializeField] BFS bfs;
+    [SerializeField] DFS dfs;
+    [SerializeField] AStar a_star;
 
 
     [HideInInspector] public TileVisualizer tileVisualizer;
@@ -23,8 +25,11 @@ public class GameManager : MonoBehaviour
 
     public bool isPathDone = false;
 
-    public bool isStopPlacing;    
-    
+    public bool isStopPlacing;
+
+    public bool doubleSearch = false;
+    public bool secondSearchStarted = false;
+
 
     private void Awake()
     {
@@ -44,7 +49,11 @@ public class GameManager : MonoBehaviour
                 allTiles[coor].ResetTile();
             }                       
         }
-        //tileVisualizer.ChangeColorRuntime(stopTile, tileVisualizer.defaultColor);
+        if(stopTile != null)
+        {
+            tileVisualizer.ChangeColorRuntime(stopTile, tileVisualizer.defaultColor);
+        }       
+        
         isPathDone = false;
 
     }    
@@ -92,10 +101,15 @@ public class GameManager : MonoBehaviour
     {       
         if( !CanStart()) { return; }
 
-        bfs.BuildPath();        
+        a_star.BuildPath();        
         startTile.SetImage(startTile.startImage);
-        targetTile.SetImage(targetTile.targetImage);       
-       
+        targetTile.SetImage(targetTile.targetImage);
+        if(stopTile!= null)
+        {
+            stopTile.SetImage(stopTile.stopImage);
+        }
+        
+
     }
     
 
