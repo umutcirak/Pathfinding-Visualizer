@@ -23,9 +23,9 @@ public class Tile : MonoBehaviour
         gameManager = FindObjectOfType<GameManager>();
         tileVisualizer = FindObjectOfType<TileVisualizer>();
         uiVisualizer = FindObjectOfType<UiVisualizer>();
-    }        
+    }    
 
-    
+
     public void OnMouseDown()
     {  
         if(gameManager.IsProcessingAlgorithm()) { return; }

@@ -29,7 +29,13 @@ public class Node
         isWalkable = true;
         isExplored = false;
         isPath = false;
+
+        //Common
         parent = null;
+
+        // A*
+        g_cost = int.MaxValue;
+        CalculateFCost();       
     }
 
     public void Block()

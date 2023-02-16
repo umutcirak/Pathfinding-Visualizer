@@ -51,6 +51,7 @@ public class GameManager : MonoBehaviour
         }
         if(stopTile != null)
         {
+            allNodes[stopTile.coordinate].Reset();
             tileVisualizer.ChangeColorRuntime(stopTile, tileVisualizer.defaultColor);
         }       
         

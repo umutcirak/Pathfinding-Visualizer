@@ -10,20 +10,25 @@ public class AStar : MonoBehaviour
     Node startNode;
     Node targetNode;
     Node currentNode;
-           
 
+
+    /*
     Vector2Int[] directions = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left 
     , Vector2Int.up + Vector2Int.right, Vector2Int.up + Vector2Int.left, Vector2Int.down + Vector2Int.right
     , Vector2Int.down + Vector2Int.left};
+    */
+    Vector2Int[] directions = { Vector2Int.right, Vector2Int.up, Vector2Int.down, Vector2Int.left };
 
-    Dictionary<Vector2Int, Node> openList; // searching currently
-    Dictionary<Vector2Int,Node> closedList; // searched Before
+    Dictionary<Vector2Int, Node> openList = new Dictionary<Vector2Int, Node>(); // searching currently
+    Dictionary<Vector2Int,Node> closedList = new Dictionary<Vector2Int, Node>(); // searched Before
 
     List<Node> path;
 
     GameManager gameManager;
     MovePoint pointMover;
     TileVisualizer tileVisualizer;
+
+    bool isRunning;
 
     private void Awake()
     {
@@ -34,7 +39,8 @@ public class AStar : MonoBehaviour
 
 
     void Setup()
-    {
+    {       
+
         startNode = gameManager.allNodes[gameManager.startTile.coordinate];
         targetNode = gameManager.allNodes[gameManager.targetTile.coordinate];
 
@@ -42,16 +48,44 @@ public class AStar : MonoBehaviour
         targetCoordinate = targetNode.coordinate;
     }
 
-    public void BuildPath()
+    void CheckDoubleSearch()
     {
-        path = new List<Node>();        
+        if (gameManager.stopTile != null)
+        {
+            gameManager.doubleSearch = true;
+        }
+        else
+        {
+            gameManager.doubleSearch = false;
+        }
+    }
 
-        gameManager.Reset();
-        Setup();
-        StartCoroutine(AStarSearch());
-        AStarSearch();
-        //CalculatePath();
-        StartCoroutine(tileVisualizer.VisualizePathCo(path));
+
+    public void BuildPath()
+    {        
+        CheckDoubleSearch();
+       
+        path = new List<Node>();
+
+        if (!gameManager.doubleSearch)
+        {
+            gameManager.Reset();
+            Setup();
+            StartCoroutine(AStarSearch());
+        }
+        else
+        {
+            gameManager.Reset();
+            gameManager.secondSearchStarted = false;
+
+            startNode = gameManager.allNodes[gameManager.startTile.coordinate];
+            targetNode = gameManager.allNodes[gameManager.stopTile.coordinate];
+
+            startCoordinate = startNode.coordinate;
+            targetCoordinate = targetNode.coordinate;
+
+            StartCoroutine(AStarSearch());
+        }
 
     }
 
@@ -59,18 +93,22 @@ public class AStar : MonoBehaviour
     
     IEnumerator AStarSearch()
     {
-        openList = new Dictionary<Vector2Int, Node>();
-        closedList = new Dictionary<Vector2Int, Node>();
+        openList.Clear();
+        closedList.Clear();
+
+        isRunning = true;
 
         openList.Add(startCoordinate, startNode);
 
         // Setup Nodes
+        /*
         foreach (KeyValuePair<Vector2Int,Node> item in gameManager.allNodes)
         {
             item.Value.g_cost = int.MaxValue;
             item.Value.CalculateFCost();
             item.Value.parent = null;
         }
+        */
 
         startNode.g_cost = 0;
         startNode.h_cost = GetDistanceCost(startNode, targetNode);
@@ -78,23 +116,51 @@ public class AStar : MonoBehaviour
 
         // ---------------
 
-        while(openList.Count > 0)
+        while(isRunning && openList.Count > 0)
         {
             currentNode = GetLowestFScoreNode(openList);
 
-            //  Visualize
-            yield return new WaitForSeconds(gameManager.searchWait);
-            tileVisualizer.VisualizeExploration(gameManager.allTiles[currentNode.coordinate]);
-            //
-
             if (currentNode.coordinate == targetCoordinate)
             {
-                CalculatePath();
                 break;
             }
 
+            // Visualize Exploration
+            if (pointMover.IsPointMoving)
+            {
+                yield return null;
+                Tile tile = gameManager.allTiles[currentNode.coordinate];
+                Color exploreColor;
+                if (gameManager.doubleSearch && gameManager.secondSearchStarted)
+                {
+                    exploreColor = tileVisualizer.secondVisitedColors
+                        [tileVisualizer.secondVisitedColors.Length - 1];
+                }
+                else
+                {
+                    exploreColor = tileVisualizer.
+                    visitedColors[tileVisualizer.visitedColors.Length - 1];
+                }
+
+                tileVisualizer.ChangeColorRuntime(tile, exploreColor);
+
+            }
+            else
+            {
+                yield return new WaitForSeconds(gameManager.searchWait);
+                tileVisualizer.VisualizeExploration(gameManager.allTiles[currentNode.coordinate]);
+            }
+            // -----------------
+
+
+            
+
             openList.Remove(currentNode.coordinate);
-            closedList.Add(currentNode.coordinate, currentNode);
+            if (!closedList.ContainsKey(currentNode.coordinate))
+            {
+                closedList.Add(currentNode.coordinate, currentNode);
+
+            }
 
             List<Node> neighbors = GetNeighbors(currentNode.coordinate);
 
@@ -117,14 +183,42 @@ public class AStar : MonoBehaviour
                         openList.Add(neighbor.coordinate, neighbor);
                     }
                 }
+            }
 
+            if (currentNode.coordinate == targetNode.coordinate)
+            {
+                isRunning = false;
             }
 
         }
 
         // Out of Open List
+        isRunning = false;
 
+        CalculatePath();
 
+        if (pointMover.IsPointMoving)
+        {
+            tileVisualizer.VisualizePathRuntime(path);
+        }
+        else if ((gameManager.doubleSearch && gameManager.secondSearchStarted) || !gameManager.doubleSearch)
+        {
+            StartCoroutine(tileVisualizer.VisualizePathCo(path));
+        }
+
+        // Set Second Search
+        if (gameManager.doubleSearch && !gameManager.secondSearchStarted)
+        {
+            startNode = gameManager.allNodes[gameManager.stopTile.coordinate];
+            targetNode = gameManager.allNodes[gameManager.targetTile.coordinate];
+
+            startCoordinate = startNode.coordinate;
+            targetCoordinate = targetNode.coordinate;
+
+            gameManager.secondSearchStarted = true;
+            gameManager.ResetNodes();
+            StartCoroutine(AStarSearch());
+        }
 
     }
 
@@ -149,7 +243,8 @@ public class AStar : MonoBehaviour
 
     private void CalculatePath()
     {
-        path = new List<Node>();
+        //path = new List<Node>();
+        /*
         path.Add(targetNode);
 
         Node current = targetNode;
@@ -159,8 +254,30 @@ public class AStar : MonoBehaviour
             path.Add(current.parent);
             current = current.parent;
         }
+        */
 
-        path.Reverse();        
+        Node current = gameManager.allNodes[targetCoordinate];
+
+        //DoubleSearch
+        if (gameManager.doubleSearch && gameManager.secondSearchStarted &&
+            current.coordinate == gameManager.stopTile.coordinate)
+        {
+            return;
+        }
+
+        path.Add(current);
+        current.isPath = true;
+
+        while (current.parent != null)
+        {
+            current = current.parent;
+            path.Add(current);
+            current.isPath = true;
+        }
+        if ((gameManager.doubleSearch && gameManager.secondSearchStarted) || !gameManager.doubleSearch)
+        {
+            path.Reverse();
+        }             
     }
 
 
@@ -168,9 +285,10 @@ public class AStar : MonoBehaviour
     {
         int xDistance = Mathf.Abs(a.coordinate.x - b.coordinate.x);
         int yDistance = Mathf.Abs(a.coordinate.y - b.coordinate.y);
-        int remaining = xDistance - yDistance;
 
-        return 14 * Mathf.Min(xDistance,yDistance) + 10 * remaining;
+        //int remaining = xDistance - yDistance;
+        //return 14 * Mathf.Min(xDistance,yDistance) + 10 * remaining;
+        return xDistance + yDistance;
     }
 
 

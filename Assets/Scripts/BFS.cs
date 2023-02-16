@@ -156,8 +156,8 @@ public class BFS : MonoBehaviour
                 yield return new WaitForSeconds(gameManager.searchWait);
                 tileVisualizer.VisualizeExploration(gameManager.allTiles[currentNode.coordinate]);
             }
+            // -----------------
 
-           
 
             ExploreNeighbors();
 
