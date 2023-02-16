@@ -48,6 +48,18 @@ public class GameManager : MonoBehaviour
         isPathDone = false;
 
     }    
+
+
+    public void ResetNodes()
+    {
+        foreach (KeyValuePair<Vector2Int,Node> item in allNodes)
+        {            
+            if(!IsWall(item.Value.coordinate))
+            {
+                item.Value.Reset();
+            }
+        }
+    }
      
     public void ClearWalls()
     {
