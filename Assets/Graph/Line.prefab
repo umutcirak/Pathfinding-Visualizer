@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6085897875711021914}
   - component: {fileID: 6085897875711021915}
   - component: {fileID: 6085897875711021916}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Line
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -46,9 +46,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55056c362067ca746afec801a492c566, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attachedWeight: 0
   weightText: {fileID: 6085897877212547412}
-  textSize: 3
-  padding: 3
+  fontSize: 4
+  padding: 4
+  thicknessStart: 0.2
+  thicknessEnd: 0.2
 --- !u!120 &6085897875711021916
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -100,8 +103,8 @@ LineRenderer:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0.011086471
-        value: 0.27142933
+        time: 0.0024499968
+        value: 0.28184345
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -159,7 +162,7 @@ GameObject:
   - component: {fileID: 6085897877212547413}
   - component: {fileID: 6085897877212547411}
   - component: {fileID: 6085897877212547412}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Text Weight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -184,7 +187,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 2.7948024, y: 1.8085611}
-  m_SizeDelta: {x: 8, y: 4}
+  m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &6085897877212547411
 MeshRenderer:

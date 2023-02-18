@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GraphManager : MonoBehaviour
 {
-    Dictionary<int, GraphNode> allGraphNodes = new Dictionary<int, GraphNode>();
+   
 
 
 

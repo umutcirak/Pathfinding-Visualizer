@@ -5,28 +5,35 @@ using TMPro;
 
 public class Line : MonoBehaviour
 {
-    int attachedWeight;
-    Vector2Int connection = new Vector2Int(-1,-1);   // nodeStart id, nodeEnd id
+    public int attachedWeight;    
 
-    [Header("Weight Text Settings")]
-    [SerializeField] TextMeshPro weightText;
-    [SerializeField] int textSize;
+    [Header("Weight Line - Text Settings")]
+    [SerializeField] public TextMeshPro weightText;
+    [SerializeField] int fontSize;
     [SerializeField] float padding;
 
+    
+    [SerializeField] float thicknessStart;
+    [SerializeField] float thicknessEnd;
+
+
+    Vector2 weightTextDefaultPos;
 
     LineRenderer lineRenderer;
 
     private void Awake()
-    {
-        //weightText = GetComponentInChildren<TextMeshPro>();
+    {       
         lineRenderer = GetComponent<LineRenderer>();
     }
 
     private void Start()
     {
         lineRenderer.positionCount = 2;
-        weightText.fontSize = textSize;
-        
+        weightText.fontSize = fontSize;
+
+        lineRenderer.startWidth = thicknessStart;
+        lineRenderer.endWidth = thicknessEnd;
+
     }
 
     public void ConnectLine(Vector2 posFirst, Vector2 posSecond)
@@ -43,13 +50,47 @@ public class Line : MonoBehaviour
     }
 
     public void PlaceText(Vector2 posStart , Vector2 posEnd)
-    {       
-        //weightText.gameObject.transform.position = posStart;
+    {            
 
         Vector2 direction = posStart - posEnd;
-        Vector3 newPosition = posStart - direction.normalized * padding;
+        Vector2 newPosition = posStart - direction.normalized * padding;
+
+        weightTextDefaultPos = newPosition;
 
         weightText.gameObject.transform.position = newPosition;
+    }
+
+    public void HoverWeightText(float weightGrowAmount, float thicknessIncrease, Color weightColor)
+    {
+        Vector3 posStart = lineRenderer.GetPosition(0);
+        Vector3 posEnd = lineRenderer.GetPosition(1);
+
+        Vector2 middlePosition = (posStart + posEnd) / 2;
+        weightText.transform.position = middlePosition;
+
+        weightText.fontStyle = FontStyles.Bold;
+        weightText.fontSize = fontSize * weightGrowAmount;
+
+        lineRenderer.startWidth *= thicknessIncrease;
+        lineRenderer.endWidth *= thicknessIncrease;
+
+        weightText.color = weightColor;
+    }
+
+
+
+    public void RevokeWeightText()
+    {
+        weightText.transform.position = weightTextDefaultPos;
+        weightText.fontStyle = FontStyles.Normal;
+
+        weightText.fontSize = fontSize;
+
+        lineRenderer.startWidth = thicknessStart;
+        lineRenderer.endWidth = thicknessEnd;
+
+        weightText.color = Color.white;
+
     }
 
 

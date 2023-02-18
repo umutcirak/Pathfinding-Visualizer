@@ -9,17 +9,12 @@ public class Graph : MonoBehaviour
     [SerializeField] Box box;
    
     public int minWeight;
-    public int maxWeight;
-    [Range(0.25f, 0.75f)] public float edgePossibility;
+    public int maxWeight;    
 
     private Dictionary<int, GraphNode> graphNodes = new Dictionary<int, GraphNode>(); // id, node
     public Dictionary<Vector2Int, Box> boxes = new Dictionary<Vector2Int, Box>();
     private Dictionary<Vector2Int, Line> lines = new Dictionary<Vector2Int, Line>();  // nodeId, nodeId, Line
-
-    Vector2Int[] boxDirections = { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left,
-    Vector2Int.up + Vector2Int.right, Vector2Int.up + Vector2Int.left, Vector2Int.down, Vector2Int.right,
-    Vector2Int.down, Vector2Int.left};
-
+      
 
     public int[,] edges;
 
@@ -39,6 +34,8 @@ public class Graph : MonoBehaviour
 
 
     WeightGenerator weightGenerator;
+
+
     private void Awake()
     {
         weightGenerator = FindObjectOfType<WeightGenerator>();
@@ -49,11 +46,9 @@ public class Graph : MonoBehaviour
         InitializeEdges();
         CreateBoxes();
         PlaceNodes();       
-        weightGenerator.CreateWeights();
+        weightGenerator.CreateWeights();        
 
-        //PrintEdgesofNode(1);
-
-        DrawLines();
+        DrawLines();        
     }
 
 
@@ -130,21 +125,72 @@ public class Graph : MonoBehaviour
                 newLine.SetWeightText(edgeWeight);
                 newLine.PlaceText(posFirst, posSecond);
 
+                Vector2Int lineIndex = new Vector2Int(x, y);
+
+                lines.Add(lineIndex, newLine);
+
+            }
+        }
+    }
+
+
+    public List<GraphNode> GetNeighborNodes(int nodeID)
+    {        
+        List<GraphNode> neighborNodes = new List<GraphNode>();
+
+        for (int y = 0; y < edges.GetLength(1); y++)
+        {
+            if (edges[nodeID, y] != -1) 
+            {
+                neighborNodes.Add(graphNodes[y]);
             }
         }
 
+        return neighborNodes;
 
     }
 
-    List<Node> GetNodesFromBoxes(List<Box> boxes)
+    public List<Line> GetNeighborLines(int nodeID)
     {
-        List<Node> nodes = new List<Node>();
+        List<int> neighborIndexes = new List<int>();
+        List<Line> neighborLines = new List<Line>();
 
-        // TODO Check all nodes grom that box group
+        for (int y = 0; y < edges.GetLength(1); y++)
+        {
+            if(edges[nodeID,y] != -1) { neighborIndexes.Add(y); }
+        }
 
-        return nodes;
+
+        foreach (int index in neighborIndexes)
+        {
+            neighborLines.Add(GetLine(nodeID, index));
+        }
+
+        return neighborLines;
+    }
+
+
+    Line GetLine(int nodeIdA, int nodeIdB)
+    {
+        // smallest one, largest one
+        int indexFirst;
+        int indexSecond;
+        if(nodeIdA < nodeIdB)
+        {
+            indexFirst = nodeIdA;
+            indexSecond = nodeIdB;
+        }
+        else
+        {
+            indexFirst = nodeIdB;
+            indexSecond = nodeIdA;
+        }
+        Vector2Int lineIndex = new Vector2Int(indexFirst, indexSecond);
+
+        return lines[lineIndex];
 
     }
+
 
 
     void InitializeEdges()
@@ -161,7 +207,6 @@ public class Graph : MonoBehaviour
                 edges[x, y] = -1;
             }
         }       
-
     }   
 
 

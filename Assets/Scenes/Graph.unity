@@ -227,7 +227,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0.3019608, g: 0.27058825, b: 0.3647059, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -274,6 +274,60 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &608474413
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 608474415}
+  - component: {fileID: 608474414}
+  m_Layer: 0
+  m_Name: Graph Visualizer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &608474414
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 608474413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60cff1b924cb6b848bbd8a2adafc16e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodeHoverColor: {r: 0.8396226, g: 0.21703447, b: 0.5466337, a: 1}
+  nodeNeighborColor: {r: 0.44855818, g: 0.9433962, b: 0.5989865, a: 1}
+  lineHoverColor: {r: 0.28679246, g: 0.7169812, b: 0.4841075, a: 1}
+  weightHoverColor: {r: 1, g: 0.59346133, b: 0.20188677, a: 1}
+  defaultColor: {r: 1, g: 1, b: 1, a: 1}
+  weightGrowMultipler: 1.4
+  nodeGrowthMultipler: 1.4
+  thicknessIncrease: 2.6
+  transparencyAmount: 0.4
+  isRunning: 0
+--- !u!4 &608474415
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 608474413}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 111.56849, y: 24.51445, z: -0.31719568}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1195933499
 GameObject:
@@ -368,7 +422,6 @@ MonoBehaviour:
   box: {fileID: 1360600369036808420, guid: 44f005833d356524fa7d103ecb9b91aa, type: 3}
   minWeight: 5
   maxWeight: 30
-  edgePossibility: 0.75
   graphSize: 1
   boxCountHorizontal: 16
   boxCountVertical: 6
@@ -403,6 +456,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 290f4fa4f1691414eb526c5114e91caa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  movementSpeed: 40
+  zoomAmount: 1000
   shiftVertical: -20
   cameraSize: 60
 --- !u!4 &1636353530
@@ -449,12 +504,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26f56e62812f59d4289c58e61748df4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  firstLevelPossibility: 10
-  secondLevelPossibility: 5
-  thirdLevelPossibility: 5
-  firstWeightInterval: {x: 5, y: 10}
-  secondWeightInterval: {x: 7, y: 18}
-  thirdWeightInterval: {x: 10, y: 25}
+  firstLevelPossibility: 25
+  secondLevelPossibility: 10
+  thirdLevelPossibility: 10
+  firstWeightInterval: {x: 3, y: 15}
+  secondWeightInterval: {x: 8, y: 23}
+  thirdWeightInterval: {x: 10, y: 35}
 --- !u!4 &1921354771
 Transform:
   m_ObjectHideFlags: 0
