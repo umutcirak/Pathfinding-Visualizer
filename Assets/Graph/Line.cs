@@ -16,10 +16,11 @@ public class Line : MonoBehaviour
     [SerializeField] float thicknessStart;
     [SerializeField] float thicknessEnd;
 
-
+    
+    
     Vector2 weightTextDefaultPos;
 
-    LineRenderer lineRenderer;
+    public LineRenderer lineRenderer;
 
     private void Awake()
     {       
@@ -90,6 +91,11 @@ public class Line : MonoBehaviour
         lineRenderer.endWidth = thicknessEnd;
 
         weightText.color = Color.white;
+
+    }
+
+    public void ResetLine()
+    {
 
     }
 

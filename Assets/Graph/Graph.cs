@@ -9,9 +9,9 @@ public class Graph : MonoBehaviour
     [SerializeField] Box box;
    
     public int minWeight;
-    public int maxWeight;    
+    public int maxWeight;
 
-    private Dictionary<int, GraphNode> graphNodes = new Dictionary<int, GraphNode>(); // id, node
+    public Dictionary<int, GraphNode> graphNodes = new Dictionary<int, GraphNode>(); // id, node
     public Dictionary<Vector2Int, Box> boxes = new Dictionary<Vector2Int, Box>();
     private Dictionary<Vector2Int, Line> lines = new Dictionary<Vector2Int, Line>();  // nodeId, nodeId, Line
       
@@ -103,8 +103,13 @@ public class Graph : MonoBehaviour
         }
     }
 
-
-
+    public void ResetGraph()
+    {
+        foreach (var item in graphNodes)
+        {
+            item.Value.Reset();
+        }       
+    }
 
     void DrawLines()
     {
@@ -169,8 +174,13 @@ public class Graph : MonoBehaviour
         return neighborLines;
     }
 
+    public int GetWeight(int id_a, int id_b)
+    {
+        return edges[id_a, id_b];
+    }
 
-    Line GetLine(int nodeIdA, int nodeIdB)
+
+    public Line GetLine(int nodeIdA, int nodeIdB)
     {
         // smallest one, largest one
         int indexFirst;
@@ -188,8 +198,9 @@ public class Graph : MonoBehaviour
         Vector2Int lineIndex = new Vector2Int(indexFirst, indexSecond);
 
         return lines[lineIndex];
-
     }
+
+    
 
 
 

@@ -13,6 +13,8 @@ public class GraphCameraPositioner : MonoBehaviour
     [SerializeField] float cameraSize;
 
     private float sizeBorder;
+    private float start_pos_x;
+    private float start_pos_y;
 
 
     Camera mainCamera;
@@ -51,6 +53,7 @@ public class GraphCameraPositioner : MonoBehaviour
         {
             Vector3 difference = Input.mousePosition - mouseDownPosition;
             mainCamera.transform.position += new Vector3(-difference.x, -difference.y, 0f) * movementSpeed * Time.deltaTime;
+            RestrictCamera();
             mouseDownPosition = Input.mousePosition;
         }
     }
@@ -70,15 +73,38 @@ public class GraphCameraPositioner : MonoBehaviour
         }
 
         Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize, 10f, sizeBorder);
+        RestrictCamera();
     }
 
+
+    void RestrictCamera()
+    {
+        Vector3 currentPos = mainCamera.transform.position;
+
+        float ratio = mainCamera.orthographicSize / sizeBorder;
+
+        float x_change = start_pos_x - (start_pos_x * ratio) + 1f; //1f debug gap
+
+        float x_lower = start_pos_x - x_change;
+        float x_upper = start_pos_x + x_change;
+               
+
+        float new_x = mainCamera.transform.position.x;
+        new_x = Mathf.Clamp(new_x, x_lower, x_upper);
+
+        Vector3 newPos = new Vector3(new_x, currentPos.y, currentPos.z);
+
+        mainCamera.transform.position = newPos;
+    }
 
     void StretchCamera()
     {
         float size = graph.GraphSize * cameraSize;
         sizeBorder = size;
         float posX = (graph.UpperHorizontalPos - 1) * 0.5f;
+        start_pos_x = posX;
         float posY = (graph.UpperVerticalPos - 1) * 0.5f;
+        start_pos_y = posY;
 
         float shiftBottom = graph.GraphSize * shiftVertical;
 
