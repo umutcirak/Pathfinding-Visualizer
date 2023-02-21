@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 public class GraphNode : MonoBehaviour
-{     
+{
+    [SerializeField] public TextMeshPro distanceText;
     public int id;    
     public Color lastColor;
     public bool isPath;
@@ -82,6 +84,35 @@ public class GraphNode : MonoBehaviour
         gameObject.layer = LayerMask.NameToLayer("Bottom");
     }
       
+
+    public IEnumerator SetDistanceText(float initialDistance)
+    {
+        
+        if(shortestDistance == int.MaxValue || initialDistance == int.MaxValue )
+        {
+            distanceText.text = shortestDistance.ToString();
+            yield return null;
+        }
+        else
+        {
+            float current = initialDistance;            
+            float step = 2f;
+
+            while (Mathf.Abs(current - shortestDistance) > 0.2f)
+            {
+                current = Mathf.Lerp(current, shortestDistance, step * Time.deltaTime);
+
+                distanceText.text = ((int)current).ToString();
+                
+                yield return new WaitForEndOfFrame();
+            }
+            distanceText.text = ((int)current).ToString();
+
+        }
+        
+    }
+
+
 
 
 

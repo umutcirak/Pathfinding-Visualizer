@@ -10,7 +10,7 @@ public class GraphVisualizer : MonoBehaviour
     [SerializeField] Color targetNodeColor;
 
 
-    [Header("Path Settings")]
+    [Header("Path Node Settings")]
     [SerializeField] [Range(1f, 4f)] float growthPathMax;
     [SerializeField] [Range(1f, 3f)] float growthPathEnd;
     [SerializeField] [Range(1.01f,1.1f)] float growthPathStep;
@@ -18,30 +18,52 @@ public class GraphVisualizer : MonoBehaviour
     [SerializeField] Color colorPath;
     [SerializeField] Color colorPathLine;
     [SerializeField] public float pathWait;
+
+    [Header("Path Line Settings")]
     [SerializeField] float thicknessPathLine;
+    [SerializeField] float weightGrowAmount;
+    [SerializeField] Color weightColor;
+
 
     [Header("Explore Settings")]
     [SerializeField] [Range(1f, 2.5f)] float growthExploreMax;
     [SerializeField] [Range(1f, 1.4f)] float growthExploreEnd;
     [SerializeField] [Range(1.01f, 1.1f)] float growthExploreStep;
     [SerializeField] [Range(0f, 0.1f)] float growthExploreWait;
-    [SerializeField] Color colorExplored;
+    [SerializeField] Color colorExplored;    
     [SerializeField] public float waitForExplore;
     [SerializeField] public float exploreColorLerpTime;
 
-
+    [Header("Neighbor of Explored Node Settings")]
+    [SerializeField] Color colorNeighborExplored;
+    [SerializeField] float neighborExploredGrowthAmount;
+    [SerializeField] float neighborExploredHangWait;
+    [SerializeField] float  neighborExploredStepWait;
+    [SerializeField] float neighborExploredGrowthStep;
 
     Graph graph;
     GraphManager graphManager;
+      
 
+    [SerializeField] float processTimeLeft;
+    [SerializeField] float debugWait;
+    [SerializeField] bool isPathBuilding;
+
+
+    List<GraphNode> neighborInProcess = new List<GraphNode>();
+    List<GraphNode> exploreInProcess = new List<GraphNode>();
 
     private void Awake()
     {
         graphManager = FindObjectOfType<GraphManager>();
         graph = FindObjectOfType<Graph>();
     }
-  
-   
+
+    private void Update()
+    {
+        DecreaseProcesTimeLeft();
+    }
+
     public void SetStartColors()
     {
         ChangeColor(graphManager.startNode, startNodeColor);
@@ -51,6 +73,12 @@ public class GraphVisualizer : MonoBehaviour
 
     public IEnumerator VisualizePathCO(List<GraphNode> path)
     {
+        while(processTimeLeft >= 0f)
+        {
+            yield return new WaitForEndOfFrame();
+        }
+        isPathBuilding = true;
+
         for (int i = 0; i < path.Count; i++)
         {
             yield return new WaitForSeconds(pathWait);
@@ -94,46 +122,119 @@ public class GraphVisualizer : MonoBehaviour
             }
 
         }
+        isPathBuilding = false;
         graphManager.isRunning = false;
                
     }   
 
     void VisualizePathLine(Line line)
     {
-        //line.GetComponent<LineRenderer>().SetColors(colorPathLine, colorPathLine);
+        line.HoverWeightText(weightGrowAmount,thicknessPathLine,weightColor);
+        line.thicknessLast = line.lineRenderer.startWidth;      
 
     }
 
     public void VisualizeExploredNode(GraphNode nodeExplored)
     {
         if(nodeExplored!= null && nodeExplored.id != graphManager.targetNode.id)
-        {
-            //nodeExplored.GetComponent<SpriteRenderer>().color = colorExplored;
+        {            
             StartCoroutine(ChangeColorCO(nodeExplored, colorExplored));
 
-            StartCoroutine(EnlargeExploredNodeCO(nodeExplored));
+            StartCoroutine(EnlargeShrinkNodeCO(nodeExplored,growthExploreMax,growthExploreEnd,
+                growthExploreStep,growthExploreWait,0f));
         
         }      
     }    
 
-    public IEnumerator EnlargeExploredNodeCO(GraphNode nodeExplored)
+    public IEnumerator ChangeNeighborColorCO(GraphNode node)
     {
-        float max_x = nodeExplored.transform.localScale.x * growthExploreMax;
-        float end_x = nodeExplored.transform.localScale.x * growthExploreEnd;
-
-        while (nodeExplored.transform.localScale.x < max_x)
+        if(waitForExplore >= 0.15f)
         {
-            yield return new WaitForSeconds(growthExploreWait);
+            Debug.Log("Amk processi basladi");
 
-            nodeExplored.transform.localScale *= growthExploreStep;
+            Color initialColor = node.GetComponent<SpriteRenderer>().material.color;
+            Color targetColor = colorNeighborExplored;
 
+            float duration = (waitForExplore / 2) - 0.1f;
+            float elapsedTime = 0.0f;
+
+            //Color currentColor = node.GetComponent<SpriteRenderer>().color;
+
+            while (elapsedTime < duration)
+            {
+                elapsedTime += Time.deltaTime;
+                float t = elapsedTime / duration;
+                node.GetComponent<SpriteRenderer>().material.color = Color.Lerp(initialColor, targetColor, t);
+                yield return null;
+            }
+            elapsedTime = 0.0f;
+
+            while (elapsedTime < duration)
+            {
+                elapsedTime += Time.deltaTime;
+                float t = elapsedTime / duration;
+                node.GetComponent<SpriteRenderer>().material.color = Color.Lerp(targetColor, initialColor, t);
+                yield return null;
+            }
+            node.GetComponent<SpriteRenderer>().material.color = initialColor;
+
+        }    
+            
+
+    } 
+
+    public void VisualizeNeighborOfExploredNode(List<GraphNode> changedNeighbors, List<int> previousDistances)
+    {       
+
+        for (int i = 0; i < changedNeighbors.Count; i++)
+        {
+            GraphNode node = changedNeighbors[i];
+            int previousDistance = previousDistances[i];
+
+            //ChangeColor(node, colorNeighborExplored);
+
+            StartCoroutine(EnlargeShrinkNodeCO(node, neighborExploredGrowthAmount, 1f, neighborExploredGrowthStep, 
+                neighborExploredStepWait, waitForExplore));
+            StartCoroutine(node.SetDistanceText(previousDistance));
         }
 
-        while (nodeExplored.transform.localScale.x > end_x)
+        
+    }
+
+    
+
+
+    public IEnumerator EnlargeShrinkNodeCO(GraphNode node, float max_growth,float end_growth, float step, 
+        float waitStep, float waitBeforeShrink)
+    {
+        if (!isPathBuilding)
         {
-            yield return new WaitForSeconds(growthExploreWait);
-            nodeExplored.transform.localScale /= growthExploreStep;
+            processTimeLeft = 100f;
         }
+        
+
+        float max_x = node.transform.localScale.x * max_growth;
+        float end_x = node.transform.localScale.x * end_growth;
+
+        // node.transform.localScale.x < max_x
+        while (Mathf.Abs(node.transform.localScale.x - max_x) > 0.1f)
+        {
+            yield return new WaitForSeconds(waitStep);
+
+            node.transform.localScale *= step;
+
+        }
+        yield return new WaitForSeconds(waitBeforeShrink);
+        // node.transform.localScale.x > end_x
+        while (Mathf.Abs(node.transform.localScale.x - end_x) > 0.1f)
+        {
+            yield return new WaitForSeconds(waitStep);
+            node.transform.localScale /= step;
+        }
+
+        processTimeLeft = debugWait;
+
+        
     }
 
     public void VisualizeExploreLine()
@@ -162,6 +263,7 @@ public class GraphVisualizer : MonoBehaviour
 
     IEnumerator ChangeColorCO(GraphNode node, Color targetColor)
     {
+      
         SpriteRenderer sr = node.GetComponent<SpriteRenderer>();
         Color startColor = sr.color;
         float currentTime = 0.0f;
@@ -173,9 +275,18 @@ public class GraphVisualizer : MonoBehaviour
             yield return null;
         }
 
+        node.lastColor = sr.color;       
 
     }
 
 
+    void DecreaseProcesTimeLeft()
+    {
+        if(processTimeLeft > 0f)
+        {
+            processTimeLeft -= Time.deltaTime;
+        }
+        
+    }
 
 }

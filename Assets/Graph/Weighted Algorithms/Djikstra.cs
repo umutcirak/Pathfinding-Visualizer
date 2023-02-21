@@ -20,27 +20,30 @@ public class Djikstra : MonoBehaviour
     GraphManager graphManager;
     GraphVisualizer graphVisualizer;
 
+    Coroutine coroutine;
+
     private void Awake()
     {
         graph = FindObjectOfType<Graph>();
         graphManager = FindObjectOfType<GraphManager>();
         graphVisualizer = FindObjectOfType<GraphVisualizer>();
     }
-
+   
 
     public void BuildPath()
     {
+        coroutine = null;
         visitedNodes.Clear();
         unvisitedNodes.Clear();
 
-        StartCoroutine(Search());      
+        coroutine = StartCoroutine(Search());      
     }
 
     IEnumerator Search()
     {
         graphManager.isRunning = true;
 
-        startNode = graphManager.startNode;
+        startNode = graphManager.startNode;        
 
         foreach (var item in graph.graphNodes)
         {
@@ -50,6 +53,7 @@ public class Djikstra : MonoBehaviour
 
         // SET START NODE
         startNode.shortestDistance = 0;
+        StartCoroutine(startNode.SetDistanceText(0f));
         startNode.previous = nullNodeID;
         visitedNodes.Add(startNode.id,startNode);
         unvisitedNodes.Remove(startNode.id);
@@ -60,40 +64,61 @@ public class Djikstra : MonoBehaviour
         {
             int weight = graph.GetWeight(startNode.id, neighbor.id);
             graph.graphNodes[neighbor.id].shortestDistance = weight;
+
+            // Visualize Neighbor
+            StartCoroutine(neighbor.SetDistanceText(weight));
+            StartCoroutine(graphVisualizer.ChangeNeighborColorCO(neighbor));
+
             neighbor.previous = startNode.id;
         }
 
 
         GraphNode currentNode = GetMinDistantNode();
-
+        
         if (currentNode != null)
         {
             while ((currentNode != null && currentNode.id != graphManager.targetNode.id)
            || unvisitedNodes.Count > 0)
             {
+                if (currentNode == null) { graphManager.isRunning = false; StopCoroutine(coroutine);}
                 // Visualize Explored Node
-                graphVisualizer.VisualizeExploredNode(currentNode);
+                graphVisualizer.VisualizeExploredNode(currentNode);                
                 yield return new WaitForSeconds(graphVisualizer.waitForExplore);
                 //
 
 
                 List<GraphNode> neighbors = graph.GetNeighborNodes(currentNode.id);
-
-                foreach (GraphNode neighbor in neighbors)
+                //Debug.Log("Neighbors Count: " + neighbors.Count);
+                List<GraphNode> changedNeighbors = new List<GraphNode>();
+                List<int> previousDistances = new List<int>();
+                for (int i = 0; i < neighbors.Count; i++)                
                 {
+                    GraphNode neighbor = neighbors[i];
+                    
                     int distanceFromCurrent = currentNode.shortestDistance + graph.GetWeight(currentNode.id, neighbor.id);
 
                     if (distanceFromCurrent < neighbor.shortestDistance)
                     {
+                        changedNeighbors.Add(neighbor);
+                        previousDistances.Add(neighbor.shortestDistance);
+                        float initalDistance = neighbor.shortestDistance;
                         graph.graphNodes[neighbor.id].shortestDistance = distanceFromCurrent;
+
+                        StartCoroutine(graphVisualizer.ChangeNeighborColorCO(neighbor));
+                        StartCoroutine(neighbor.SetDistanceText(initalDistance)); // Change Distance Text
+                                               
                         neighbor.previous = currentNode.id;
                     }
                 }
-
+                //Visualize Neighbors of Explored Node
+                //graphVisualizer.VisualizeNeighborOfExploredNode(changedNeighbors, previousDistances);
+                //
                 visitedNodes.Add(currentNode.id, currentNode);
                 unvisitedNodes.Remove(currentNode.id);
 
                 currentNode = GetMinDistantNode();
+
+                
             }
         }
 
@@ -120,6 +145,7 @@ public class Djikstra : MonoBehaviour
             current = graph.graphNodes[current.previous];
         }
         path.Add(graph.graphNodes[graphManager.startNode.id]);
+        graph.graphNodes[graphManager.startNode.id].isPath = true;
 
         path.Reverse();
         return path;
@@ -141,9 +167,18 @@ public class Djikstra : MonoBehaviour
                 minNodeID = node.id;
             }
         }
-
+        
         if(minNodeID == nullNodeID)
         {
+            /*
+               GraphNode node = null;
+            foreach (KeyValuePair<int, GraphNode> item in unvisitedNodes)
+            {
+                node = item.Value;
+                break;
+            }
+                return node;
+             */
             return null;
         }
 

@@ -54,16 +54,8 @@ public class WeightGenerator : MonoBehaviour
         
         // First Level
         foreach (Vector2Int neighborBoxCoor in validFirstLevel)
-        {
-            //DEBUG
-            /*
-            if(boxCoordinate.x == 1 && boxCoordinate.y == 1)
-            {
-               Debug.Log("Current Coordinate: " + boxCoordinate + ", Valid Jump: " + neighborBoxCoor);
-            }
-            */
+        {         
            
-
             randPossibility = Random.Range(0, 100);
             if (randPossibility < firstLevelPossibility)
             {
@@ -100,6 +92,9 @@ public class WeightGenerator : MonoBehaviour
                 int weightRand = Random.Range(thirdWeightInterval.x, thirdWeightInterval.y);
                 GraphNode neighborNode = graph.boxes[neighborBoxCoor].GetComponentInChildren<GraphNode>();
 
+                // Debug.Log("Current Node id: " + currentNode.id);
+                // Debug.Log("Neighbor Node id: " + neighborNode.id);
+                // Debug.Log("Array Length: " + graph.edges.GetLength(0));
                 graph.edges[currentNode.id, neighborNode.id] = weightRand;
                 graph.edges[neighborNode.id, currentNode.id] = weightRand;
             }
@@ -110,14 +105,6 @@ public class WeightGenerator : MonoBehaviour
 
     }
 
-
-
-
-    void CreateWeightFirst()
-    {
-
-
-    }
 
 
     List<Vector2Int> GetValidNeighbors(Vector2Int coordinateCurrent,HashSet<Vector2Int> level)

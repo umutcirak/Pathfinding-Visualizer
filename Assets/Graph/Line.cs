@@ -13,9 +13,9 @@ public class Line : MonoBehaviour
     [SerializeField] float padding;
 
     
-    [SerializeField] float thicknessStart;
-    [SerializeField] float thicknessEnd;
+    [SerializeField] public float thicknessStart;    
 
+    [SerializeField] public float thicknessLast;
     
     
     Vector2 weightTextDefaultPos;
@@ -33,7 +33,8 @@ public class Line : MonoBehaviour
         weightText.fontSize = fontSize;
 
         lineRenderer.startWidth = thicknessStart;
-        lineRenderer.endWidth = thicknessEnd;
+        lineRenderer.endWidth = thicknessStart;
+        thicknessLast = thicknessStart;
 
     }
 
@@ -87,8 +88,8 @@ public class Line : MonoBehaviour
 
         weightText.fontSize = fontSize;
 
-        lineRenderer.startWidth = thicknessStart;
-        lineRenderer.endWidth = thicknessEnd;
+        lineRenderer.startWidth = thicknessLast;
+        lineRenderer.endWidth = thicknessLast;
 
         weightText.color = Color.white;
 
@@ -96,7 +97,9 @@ public class Line : MonoBehaviour
 
     public void ResetLine()
     {
-
+        lineRenderer.startWidth = thicknessStart;
+        lineRenderer.endWidth = thicknessStart;
+        thicknessLast = thicknessStart;
     }
 
 

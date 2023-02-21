@@ -83,16 +83,23 @@ public class GraphCameraPositioner : MonoBehaviour
 
         float ratio = mainCamera.orthographicSize / sizeBorder;
 
+        // Set X
         float x_change = start_pos_x - (start_pos_x * ratio) + 1f; //1f debug gap
-
         float x_lower = start_pos_x - x_change;
-        float x_upper = start_pos_x + x_change;
-               
+        float x_upper = start_pos_x + x_change;             
 
         float new_x = mainCamera.transform.position.x;
         new_x = Mathf.Clamp(new_x, x_lower, x_upper);
 
-        Vector3 newPos = new Vector3(new_x, currentPos.y, currentPos.z);
+        // Set Y
+        float y_change = start_pos_y - (start_pos_y * ratio) + 1f;
+        float y_lower = start_pos_y - y_change;
+        float y_upper = start_pos_y + y_change - shiftVertical;
+        float new_y = mainCamera.transform.position.y;
+        new_y = Mathf.Clamp(new_y, y_lower, y_upper);
+
+
+        Vector3 newPos = new Vector3(new_x, new_y, currentPos.z);
 
         mainCamera.transform.position = newPos;
     }

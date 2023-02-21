@@ -108,7 +108,12 @@ public class Graph : MonoBehaviour
         foreach (var item in graphNodes)
         {
             item.Value.Reset();
-        }       
+        }
+
+        foreach (var item in lines)
+        {
+            item.Value.ResetLine();
+        }
     }
 
     void DrawLines()
@@ -206,7 +211,7 @@ public class Graph : MonoBehaviour
 
     void InitializeEdges()
     {
-        int sizeMatrix = (boxCountHorizontal *boxCountVertical * graphSize) + 1;
+        int sizeMatrix = (boxCountHorizontal *boxCountVertical * graphSize * graphSize) + 1;
         
         edges = new int[sizeMatrix, sizeMatrix];
 
