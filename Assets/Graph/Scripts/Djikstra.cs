@@ -20,7 +20,7 @@ public class Djikstra : MonoBehaviour
     GraphManager graphManager;
     GraphVisualizer graphVisualizer;
 
-    Coroutine coroutine;
+    public Coroutine coroutine;
 
     private void Awake()
     {
@@ -77,9 +77,10 @@ public class Djikstra : MonoBehaviour
         
         if (currentNode != null)
         {
-            while ((currentNode != null && currentNode.id != graphManager.targetNode.id)
+            while ((graphManager.isRunning && currentNode != null && currentNode.id != graphManager.targetNode.id)
            || unvisitedNodes.Count > 0)
             {
+                //if(!graphManager.isRunning) { StopCoroutine(coroutine); }
                 if (currentNode == null) { graphManager.isRunning = false; StopCoroutine(coroutine);}
                 // Visualize Explored Node
                 graphVisualizer.VisualizeExploredNode(currentNode);                
@@ -117,12 +118,11 @@ public class Djikstra : MonoBehaviour
                 unvisitedNodes.Remove(currentNode.id);
 
                 currentNode = GetMinDistantNode();
-
-                
+                                
             }
         }
-
         
+
 
         // Visualize Path
         GetPath();        

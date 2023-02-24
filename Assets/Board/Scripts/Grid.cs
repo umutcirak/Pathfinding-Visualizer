@@ -14,25 +14,46 @@ public class Grid : MonoBehaviour
     [HideInInspector] public int Heigth { get { return heightMultiplier * gridSize; } }
 
 
-
     public enum BoardTransition { processing, notProcessing };
     public BoardTransition currentTransition = BoardTransition.notProcessing;
 
     GameManager gameManager;
+    GridSizePicker gridSizePicker;
+    GridSettings gridSettings;
 
     private void Awake()
     {
         gameManager = FindObjectOfType<GameManager>();
+        gridSizePicker = FindObjectOfType<GridSizePicker>();
+        gridSettings = FindObjectOfType<GridSettings>();
+        //ManageSingleton();
     }
 
     void Start()
     {
+        gridSize = gridSettings.currentSize;
         CreateGrid();
     }
 
 
+    void ManageSingleton()
+    {
+        int instanceCount = FindObjectsOfType(GetType()).Length;
 
-    void CreateGrid()
+        if (instanceCount > 1)
+        {
+            gameObject.SetActive(false);
+            Destroy(gameObject);
+
+        }
+        else
+        {
+            DontDestroyOnLoad(gameObject);
+        }
+    }
+
+
+    public void CreateGrid()
     {        
         //gameManager.allTiles = new Tile[Width, Heigth];
 

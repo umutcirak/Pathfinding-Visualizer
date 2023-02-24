@@ -59,7 +59,9 @@ public class GraphManager : MonoBehaviour
     {
         if(Input.GetMouseButtonDown(1))
         {
-            if(graphManager.isRunning) { return; }
+
+           if(isRunning) { return; }
+
             graph.ResetGraph();
             if(startNode != null)
             {

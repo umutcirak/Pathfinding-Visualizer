@@ -25,10 +25,12 @@ public class GameManager : MonoBehaviour
     public bool isStopPlacing;
     public bool doubleSearch = false;
     public bool secondSearchStarted = false;
+    public bool isPaused = false;
 
     [HideInInspector] public TileVisualizer tileVisualizer;
     [HideInInspector] public UiVisualizer uiVisualizer;
     AlgorithmPicker algorithmPicker;
+    GridSettings gridSettings;
 
 
     private void Awake()
@@ -36,9 +38,14 @@ public class GameManager : MonoBehaviour
         tileVisualizer = FindObjectOfType<TileVisualizer>();
         uiVisualizer = FindObjectOfType<UiVisualizer>();
         algorithmPicker = FindObjectOfType<AlgorithmPicker>();
+        gridSettings = FindObjectOfType<GridSettings>();
     }
-          
-   
+
+    private void Start()
+    {
+        searchWait = gridSettings.currentSpeed;
+    }
+
     public void Reset()
     {        
         foreach (KeyValuePair<Vector2Int, Node> item in allNodes)
@@ -101,9 +108,10 @@ public class GameManager : MonoBehaviour
 
     public void Visualize()
     {       
-        if( !CanStart()) { return; }        
-              
-        switch(algorithmPicker.selectedAlgorithm)
+        if( !CanStart()) { return; }
+        if (IsProcessingAlgorithm()) { return; }
+
+        switch (algorithmPicker.selectedAlgorithm)
         {
             case AlgorithmPicker.AlgorithmType.None:
                 return;
@@ -192,6 +200,8 @@ public class GameManager : MonoBehaviour
 
     public void ChangeStop()
     {
+        if(IsProcessingAlgorithm()) { return; }
+
         bool isPlaced = stopTile != null;
         
         if (!isStopPlacing && !isPlaced)

@@ -131,6 +131,16 @@ public class BFS : MonoBehaviour
             currentNode = queue.Dequeue();
             currentNode.isExplored = true;
 
+            //Check Is Paused
+            if (gameManager.isPaused)
+            {
+                while (gameManager.isPaused)
+                {
+                    yield return new WaitForEndOfFrame();
+                }
+            }
+
+
             // Visualize Exploration
             if (pointMover.IsPointMoving)
             {

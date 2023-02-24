@@ -149,8 +149,7 @@ public class GraphVisualizer : MonoBehaviour
     public IEnumerator ChangeNeighborColorCO(GraphNode node)
     {
         if(waitForExplore >= 0.15f)
-        {
-            Debug.Log("Amk processi basladi");
+        {           
 
             Color initialColor = node.GetComponent<SpriteRenderer>().material.color;
             Color targetColor = colorNeighborExplored;

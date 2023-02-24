@@ -52,20 +52,19 @@ public class TileVisualizer : MonoBehaviour
 
         GameObject circleFX = Instantiate(circlePrefab, tile.transform.position, Quaternion.identity);
         circleFX.transform.parent = tile.transform;
-
-        float growthRate = 5f;
-        float growthPeriod = 1f;
-
-        Vector3 originalScale = circleFX.transform.localScale;
-        Vector3 targetScale = originalScale * growthRate;
-
-        float timer = 0.0f;
-        while (timer <= growthPeriod)
+                
+        Vector3 initialScale = circleFX.transform.localScale;       
+        Vector3 finalScale = initialScale * 5f;
+        float elapsedTime = 0f;
+        float duration = 1f;
+        while (elapsedTime < duration)
         {
-            circleFX.transform.localScale = Vector3.Lerp(originalScale, targetScale, timer);
-            timer += Time.deltaTime;
+            elapsedTime += Time.deltaTime;
+            float t = elapsedTime / duration;
+            circleFX.transform.localScale = Vector3.Lerp(initialScale, finalScale, t);
             yield return null;
         }
+
         Destroy(circleFX);
         tile.GetComponent<SpriteRenderer>().color = wallColor;
         wallsInProcess.Remove(tile);
