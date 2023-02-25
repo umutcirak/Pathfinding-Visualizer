@@ -17,14 +17,21 @@ public class WeightGenerator : MonoBehaviour
 
     Graph graph;
     NeighborGroup neighborGroup;
-
+    GraphSettings graphSettings;
     private void Awake()
     {
         neighborGroup = FindObjectOfType<NeighborGroup>();
         graph = FindObjectOfType<Graph>();
+        graphSettings = FindObjectOfType<GraphSettings>();
     }
+   
 
-
+    void GetPossibilities()
+    {
+        firstLevelPossibility = graphSettings.firstCircleDensity;
+        secondLevelPossibility = graphSettings.secondCircleDensity;
+        thirdLevelPossibility = graphSettings.thirdCircleDensity;
+    }
 
     public void CreateWeights()
     {
@@ -49,8 +56,7 @@ public class WeightGenerator : MonoBehaviour
 
         GraphNode currentNode = graph.boxes[boxCoordinate].GetComponentInChildren<GraphNode>();
 
-        
-        
+        GetPossibilities();        
         
         // First Level
         foreach (Vector2Int neighborBoxCoor in validFirstLevel)

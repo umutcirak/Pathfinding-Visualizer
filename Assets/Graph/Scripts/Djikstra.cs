@@ -118,7 +118,17 @@ public class Djikstra : MonoBehaviour
                 unvisitedNodes.Remove(currentNode.id);
 
                 currentNode = GetMinDistantNode();
-                                
+
+                //Check Is Paused
+                if (graphManager.isPaused)
+                {
+                    while (graphManager.isPaused)
+                    {
+                        yield return new WaitForEndOfFrame();
+                    }
+                }
+
+
             }
         }
         

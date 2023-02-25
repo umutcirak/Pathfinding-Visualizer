@@ -22,9 +22,7 @@ public class UiVisualizer : MonoBehaviour
     public Color pauseColor;
     public Color playColor;
     bool isPause = true;
-
-
- 
+     
 
 
     GameManager gameManager;

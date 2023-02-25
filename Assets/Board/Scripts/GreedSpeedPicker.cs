@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class GreedSpeedPicker : MonoBehaviour
 {
-    [Header("Grid Speed Button")]
+    [Header("Grid Speed")]
     [SerializeField] Color defaultSizeButtonColor;
     [SerializeField] Color selectedColor;
     [SerializeField] GameObject gridSpeedList;

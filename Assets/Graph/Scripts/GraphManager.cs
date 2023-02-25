@@ -12,16 +12,17 @@ public class GraphManager : MonoBehaviour
     Graph graph;
     Djikstra djikstra;
     GraphVisualizer graphVisualizer;
-    GraphManager graphManager;
+    GraphAlgorithmPicker algoPicker;
 
     public bool isRunning = false;
+    public bool isPaused;
 
     private void Awake()
     {
         graph = FindObjectOfType<Graph>();
         djikstra = FindObjectOfType<Djikstra>();
         graphVisualizer = FindObjectOfType<GraphVisualizer>();
-        graphManager = FindObjectOfType<GraphManager>();
+        algoPicker = FindObjectOfType<GraphAlgorithmPicker>();
     }
         
     private void Update()
@@ -37,8 +38,17 @@ public class GraphManager : MonoBehaviour
         {
             graph.ResetGraph();
             graphVisualizer.SetStartColors();
-            djikstra.BuildPath();
-            // PrintPath(djikstra.path);            
+
+            switch (algoPicker.selectedAlgorithm)
+            {
+                case GraphAlgorithmPicker.AlgorithmType.None:
+                    return;
+
+                case GraphAlgorithmPicker.AlgorithmType.Djikstra:
+                    djikstra.BuildPath();
+                    break;
+            }
+                                   
         }
         
     }

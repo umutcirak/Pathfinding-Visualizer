@@ -34,15 +34,17 @@ public class Graph : MonoBehaviour
 
 
     WeightGenerator weightGenerator;
-
+    GraphSettings graphSettings;
 
     private void Awake()
     {
         weightGenerator = FindObjectOfType<WeightGenerator>();
+        graphSettings = FindObjectOfType<GraphSettings>();
     }
 
     private void Start()
     {
+        graphSize = graphSettings.currentSize;
         InitializeEdges();
         CreateBoxes();
         PlaceNodes();       

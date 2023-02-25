@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
@@ -74,6 +74,7 @@ public class GraphNode : MonoBehaviour
     public void Reset()
     {               
         shortestDistance = int.MaxValue;
+        distanceText.text = "∞";
         previous = -1;
         isPath = false;
 
