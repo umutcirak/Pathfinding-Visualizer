@@ -2975,7 +2975,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultSizeButtonColor: {r: 1, g: 1, b: 1, a: 1}
-  selectedColor: {r: 0, g: 1, b: 0.8338392, a: 1}
+  selectedColor: {r: 0, g: 0.99215686, b: 1, a: 1}
   gridSizeList: {fileID: 613127475}
   gridSizeButton: {fileID: 1015302130}
   currentSize: 0
@@ -4296,53 +4296,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 829853639}
   m_CullTransparentMesh: 1
---- !u!1 &837102787
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 837102788}
-  - component: {fileID: 837102789}
-  m_Layer: 0
-  m_Name: Deneme
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &837102788
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 837102787}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 413.36435, y: 218.55371, z: -2.8537269}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 24
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &837102789
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 837102787}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 02826e35ae9c9384c82102e09dd68cfe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  videoClip: {fileID: 32900000, guid: 23ccc17afeb2ec345942301091578d51, type: 3}
-  videoPlayer: {fileID: 1400238659}
-  videosPath: Assets/Board/Videos/
 --- !u!1 &849670953
 GameObject:
   m_ObjectHideFlags: 0
@@ -4821,7 +4774,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
-  m_SortingOrder: 5
+  m_SortingOrder: 100
   m_TargetDisplay: 0
 --- !u!224 &935864898
 RectTransform:
@@ -5417,6 +5370,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   text_instruction: {fileID: 1091372989}
+  folderURL: https://umutcirak.github.io/Pathfinding-Visualizer/Assets/Board/Videos/
   videoClips:
   - {fileID: 32900000, guid: 23ccc17afeb2ec345942301091578d51, type: 3}
   - {fileID: 32900000, guid: 457278ad460452a46a54396b2ec69f0d, type: 3}
@@ -8896,7 +8850,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 837102789}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: Deneme, Assembly-CSharp
         m_MethodName: CalisKopek
         m_Mode: 1

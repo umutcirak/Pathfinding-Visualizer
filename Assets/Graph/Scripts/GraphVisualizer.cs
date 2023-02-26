@@ -13,7 +13,7 @@ public class GraphVisualizer : MonoBehaviour
     [Header("Path Node Settings")]
     [SerializeField] [Range(1f, 4f)] float growthPathMax;
     [SerializeField] [Range(1f, 3f)] float growthPathEnd;
-    [SerializeField] [Range(1.01f,1.1f)] float growthPathStep;
+    [SerializeField] float growthPathDuration;
     [SerializeField] [Range(0f, 0.1f)] float growthPathWait;
     [SerializeField] Color colorPath;
     [SerializeField] Color colorPathLine;
@@ -28,8 +28,8 @@ public class GraphVisualizer : MonoBehaviour
     [Header("Explore Settings")]
     [SerializeField] [Range(1f, 2.5f)] float growthExploreMax;
     [SerializeField] [Range(1f, 1.4f)] float growthExploreEnd;
-    [SerializeField] [Range(1.01f, 1.1f)] float growthExploreStep;
-    [SerializeField] [Range(0f, 0.1f)] float growthExploreWait;
+    // [SerializeField] float growthExploreStep;
+    [SerializeField] float growthExploreDuration;
     [SerializeField] Color colorExplored;    
     [SerializeField] public float waitForExplore;
     [SerializeField] public float exploreColorLerpTime;
@@ -39,7 +39,7 @@ public class GraphVisualizer : MonoBehaviour
     [SerializeField] float neighborExploredGrowthAmount;
     [SerializeField] float neighborExploredHangWait;
     [SerializeField] float  neighborExploredStepWait;
-    [SerializeField] float neighborExploredGrowthStep;
+    [SerializeField] float neighborExploredGrowthDuration;
 
     Graph graph;
     GraphManager graphManager;
@@ -104,6 +104,10 @@ public class GraphVisualizer : MonoBehaviour
             }
 
             // GROW
+
+            StartCoroutine(EnlargeShrinkNodeCO(current, growthPathMax, growthPathEnd, growthPathDuration, 0f));
+
+            /*
             float max_x = current.transform.localScale.x * growthPathMax;
             float end_x = current.transform.localScale.x * growthPathEnd;
 
@@ -120,6 +124,7 @@ public class GraphVisualizer : MonoBehaviour
                 yield return new WaitForSeconds(growthPathWait);
                 current.transform.localScale /= growthPathStep;
             }
+            */
 
         }
         isPathBuilding = false;
@@ -140,8 +145,7 @@ public class GraphVisualizer : MonoBehaviour
         {            
             StartCoroutine(ChangeColorCO(nodeExplored, colorExplored));
 
-            StartCoroutine(EnlargeShrinkNodeCO(nodeExplored,growthExploreMax,growthExploreEnd,
-                growthExploreStep,growthExploreWait,0f));
+            StartCoroutine(EnlargeShrinkNodeCO(nodeExplored,growthExploreMax,growthExploreEnd, growthExploreDuration, 0f));
         
         }      
     }    
@@ -192,54 +196,53 @@ public class GraphVisualizer : MonoBehaviour
 
             //ChangeColor(node, colorNeighborExplored);
 
-            StartCoroutine(EnlargeShrinkNodeCO(node, neighborExploredGrowthAmount, 1f, neighborExploredGrowthStep, 
-                neighborExploredStepWait, waitForExplore));
+            StartCoroutine(EnlargeShrinkNodeCO(node, neighborExploredGrowthAmount, 1f, neighborExploredGrowthDuration, 
+                waitForExplore));
             StartCoroutine(node.SetDistanceText(previousDistance));
         }
 
         
     }
 
-    
 
-
-    public IEnumerator EnlargeShrinkNodeCO(GraphNode node, float max_growth,float end_growth, float step, 
-        float waitStep, float waitBeforeShrink)
+    public IEnumerator EnlargeShrinkNodeCO(GraphNode node, float max_growth,float end_growth, float duration, float waitBeforeShrink)
     {
         if (!isPathBuilding)
         {
             processTimeLeft = 100f;
         }
-        
 
-        float max_x = node.transform.localScale.x * max_growth;
-        float end_x = node.transform.localScale.x * end_growth;
+        float currentScale = node.transform.localScale.x;
+        float endScale = node.transform.localScale.x * end_growth;
+        float maxScale = node.transform.localScale.x * max_growth;
+       
+        float timeElapsed = 0f;
 
-        // node.transform.localScale.x < max_x
-        while (Mathf.Abs(node.transform.localScale.x - max_x) > 0.1f)
+        while (timeElapsed < duration)
         {
-            yield return new WaitForSeconds(waitStep);
-
-            node.transform.localScale *= step;
-
+            timeElapsed += Time.deltaTime;      
+            float newScale = Mathf.Lerp(currentScale, maxScale, timeElapsed / duration);
+            node.transform.localScale = new Vector2(newScale, newScale);
+            yield return null;
         }
+
         yield return new WaitForSeconds(waitBeforeShrink);
-        // node.transform.localScale.x > end_x
-        while (Mathf.Abs(node.transform.localScale.x - end_x) > 0.1f)
+        timeElapsed = 0f;
+        currentScale = node.transform.localScale.x;
+
+        while (timeElapsed < duration)
         {
-            yield return new WaitForSeconds(waitStep);
-            node.transform.localScale /= step;
+            timeElapsed += Time.deltaTime;
+            float newScale = Mathf.Lerp(currentScale, endScale, timeElapsed / duration);
+            node.transform.localScale = new Vector2(newScale, newScale);
+            yield return null;
         }
 
-        processTimeLeft = debugWait;
+        node.transform.localScale = new Vector2(endScale, endScale);
 
-        
-    }
+        processTimeLeft = debugWait;        
 
-    public void VisualizeExploreLine()
-    {
-
-    }
+    }   
 
     public void VisualizeSelectStartNode()
     {

@@ -7,7 +7,8 @@ using TMPro;
 public class ShowIntructions : MonoBehaviour
 {
     [Header("Videos - Instructions")]
-    [SerializeField] TextMeshProUGUI text_instruction; 
+    [SerializeField] TextMeshProUGUI text_instruction;
+    [SerializeField] string folderURL;
     [SerializeField] VideoClip[] videoClips;
     [SerializeField] string[] instruction_texts;
     
@@ -18,12 +19,7 @@ public class ShowIntructions : MonoBehaviour
     [SerializeField] VideoPlayer videoPlayer;
 
     bool isActivated;
-
-    void Start()
-    {
-        //videoPlayer.url = System.IO.Path.Combine(videoClips[0].originalPath, "myFile.mp4");        
-    }
-      
+             
 
     public void ActivateVideoCanvas()
     {
@@ -47,8 +43,10 @@ public class ShowIntructions : MonoBehaviour
     }
 
     public void ChangeVideo(int indexVideo)
-    {
-        videoPlayer.clip = videoClips[indexVideo];
+    {       
+        videoPlayer.url = folderURL + videoClips[indexVideo].name + ".mp4";
+        videoPlayer.Stop();
+        videoPlayer.Play();
     }
 
 
