@@ -11831,7 +11831,7 @@ MonoBehaviour:
   - 'Show Neighbor Nodes: Hover the Node'
   - 'Navigating between nodes: Scroll and zoom the graph to see nodes clearer!'
   - Pick an Algorihm to find shortest path!
-  - 'Reset Graph: Left Click'
+  - 'Reset Graph: Right Click'
   - Adjust Graph Size
   - Adjust Graph Speed
   - Adjust Graph Density
