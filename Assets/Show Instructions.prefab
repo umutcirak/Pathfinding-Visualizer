@@ -50,14 +50,16 @@ MonoBehaviour:
   - {fileID: 32900000, guid: 457278ad460452a46a54396b2ec69f0d, type: 3}
   - {fileID: 32900000, guid: 8a5b49e2b3471364b8695a2e2fe0c3b4, type: 3}
   - {fileID: 32900000, guid: ba8ecf4c83093df4aa0ab8fa5270e2fc, type: 3}
+  - {fileID: 32900000, guid: 1e272b4eb269ff840a91d9193729ed84, type: 3}
   - {fileID: 32900000, guid: 7765b79ba1e803349b896aa6a0de1174, type: 3}
   - {fileID: 32900000, guid: 876ec3147271bf84baa92bfb271081e0, type: 3}
   - {fileID: 32900000, guid: 6be40b99a8833e64598a44bd60f85eb9, type: 3}
   instruction_texts:
   - 'Place Start and Target Node: Left Click'
   - 'Place and Remove Stop Node to add middle stop '
-  - 'Block Nodes: Right Click'
+  - 'Block Nodes: Right Click and Drag'
   - Select Algorithm to find shortest path!
+  - Drag nodes to run the algorithm in runtime.
   - Change Grid Size
   - Slow down the algorithm to see it more closely!
   - You can pause and resume the algorithm at runtime.

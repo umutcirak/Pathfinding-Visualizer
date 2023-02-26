@@ -19,6 +19,11 @@ public class ShowIntructions : MonoBehaviour
 
     bool isActivated;
 
+    void Start()
+    {
+        //videoPlayer.url = System.IO.Path.Combine(videoClips[0].originalPath, "myFile.mp4");        
+    }
+      
 
     public void ActivateVideoCanvas()
     {
@@ -56,5 +61,8 @@ public class ShowIntructions : MonoBehaviour
     {
         text_instruction.text = instruction_texts[indexText];
     }
+
+
+    
 
 }

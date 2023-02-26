@@ -128,7 +128,7 @@ public class AStar : MonoBehaviour
             // Visualize Exploration
             if (pointMover.IsPointMoving)
             {
-                yield return null;
+                //yield return null;
                 Tile tile = gameManager.allTiles[currentNode.coordinate];
                 Color exploreColor;
                 if (gameManager.doubleSearch && gameManager.secondSearchStarted)
